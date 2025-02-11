@@ -10,19 +10,19 @@ import SettingsContainer from "../containers/settings-container"
 import { RootState } from "../scripts/reducer"
 
 const Root = ({ locale, dispatch }) =>
-    locale && (
-        <div
-            id="root"
-            key={locale}
-            onMouseDown={() => dispatch(closeContextMenu())}>
-            <NavContainer />
-            <PageContainer />
-            <LogMenuContainer />
-            <MenuContainer />
-            <SettingsContainer />
-            <ContextMenuContainer />
-        </div>
-    )
+  locale && (
+    <div
+      id="root"
+      key={locale}
+      onMouseDown={() => dispatch(closeContextMenu())}>
+      <NavContainer />
+      <PageContainer />
+      <LogMenuContainer />
+      <MenuContainer />
+      <SettingsContainer />
+      <ContextMenuContainer />
+    </div>
+  )
 
 const getLocale = (state: RootState) => ({ locale: state.app.locale })
 export default connect(getLocale)(Root)

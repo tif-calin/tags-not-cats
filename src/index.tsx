@@ -16,24 +16,24 @@ applyThemeSettings()
 initializeIcons("icons/")
 
 const store = createStore(
-    rootReducer,
-    applyMiddleware<AppDispatch, RootState>(thunkMiddleware)
+  rootReducer,
+  applyMiddleware<AppDispatch, RootState>(thunkMiddleware)
 )
 
 store.dispatch(initApp())
 
 window.utils.addMainContextListener((pos, text) => {
-    store.dispatch(openTextMenu(pos, text))
+  store.dispatch(openTextMenu(pos, text))
 })
 
 window.fontList = [""]
 window.utils.initFontList().then(fonts => {
-    window.fontList.push(...fonts)
+  window.fontList.push(...fonts)
 })
 
 ReactDOM.render(
-    <Provider store={store}>
-        <Root />
-    </Provider>,
-    document.getElementById("app")
+  <Provider store={store}>
+    <Root />
+  </Provider>,
+  document.getElementById("app")
 )

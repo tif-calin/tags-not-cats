@@ -9,14 +9,14 @@ import { SourceRule } from "../../scripts/models/rule"
 const getSources = (state: RootState) => state.sources
 
 const mapStateToProps = createSelector([getSources], sources => ({
-    sources: sources,
+  sources: sources,
 }))
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    updateSourceRules: (source: RSSSource, rules: SourceRule[]) => {
-        source.rules = rules
-        dispatch(updateSource(source))
-    },
+  updateSourceRules: (source: RSSSource, rules: SourceRule[]) => {
+    source.rules = rules
+    dispatch(updateSource(source))
+  },
 })
 
 const RulesTabContainer = connect(mapStateToProps, mapDispatchToProps)(RulesTab)
