@@ -8,5 +8,3 @@ bin/*
 
 *.html
 *.md
-*.json
-!src/**/*.json
