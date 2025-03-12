@@ -7,6 +7,11 @@ This is a fork of [Fluent](https://github.com/yang991178/fluent-reader) for pers
 - [ ] Deprecate all category-related UI in favor of a tag-based system
 - [ ] Update OPML import/export to support tags
 - [ ] STRETCH: migrate from electron to a PWA?
+- [ ] Deprecate Redux?
+
+## TODO
+- [ ] Sort by name
+- [ ] Save icon directions in OPML export
 
 <hr />
 
@@ -54,8 +59,8 @@ npm run electron
 # Generate certificate for signature
 electron-builder create-self-signed-cert
 
-# Package the app for Windows
-npm run package-win
+# Package the app for MacOS
+npm run package-mac
 ```
 
 ### Developed with

@@ -63,8 +63,8 @@ export const enum SyncService {
   Nextcloud,
 }
 export interface ServiceConfigs {
-  type: SyncService
   importGroups?: boolean
+  type: SyncService
 }
 
 export const enum WindowStateListenerType {
@@ -74,28 +74,28 @@ export const enum WindowStateListenerType {
 }
 
 export interface TouchBarTexts {
-  menu: string
-  search: string
-  refresh: string
   markAll: string
+  menu: string
   notifications: string
+  refresh: string
+  search: string
 }
 
 export type SchemaTypes = {
-  version: string
-  theme: ThemeSettings
+  fetchInterval: number
+  filterType: number
+  fontFamily: string
+  fontSize: number
+  listViewConfigs: ViewConfigs
+  locale: string
+  menuOn: boolean
   pac: string
   pacOn: boolean
-  view: ViewType
-  locale: string
-  sourceGroups: SourceGroup[]
-  fontSize: number
-  fontFamily: string
-  menuOn: boolean
-  fetchInterval: number
   searchEngine: SearchEngines
   serviceConfigs: ServiceConfigs
-  filterType: number
-  listViewConfigs: ViewConfigs
+  sourceGroups: SourceGroup[]
+  theme: ThemeSettings
   useNeDB: boolean
+  version: string
+  view: ViewType
 }

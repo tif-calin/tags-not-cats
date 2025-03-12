@@ -1,8 +1,14 @@
-node_modules
-dist/*.js
-dist/*.js.map
-dist/*.html
-bin/*
+# MacOS
 .DS_Store
 *.provisionprofile
+
+# bin and dist
+bin/*
+dist/*.html
+dist/*.js
+dist/*.js.map
+dist/*.LICENSE.txt
+
+# Node
+node_modules
 *.lock
