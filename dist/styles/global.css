@@ -203,6 +203,7 @@ body.darwin #root > nav span.title {
   max-width: 220px;
 }
 .btn-group {
+  cursor: pointer;
   display: inline-block;
   user-select: none;
   -webkit-app-region: none;

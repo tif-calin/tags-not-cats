@@ -5,13 +5,16 @@ This is a fork of [Fluent](https://github.com/yang991178/fluent-reader) for pers
 
 ## Goals
 - [ ] Deprecate all category-related UI in favor of a tag-based system
-- [ ] Update OPML import/export to support tags
-- [ ] STRETCH: migrate from electron to a PWA?
-- [ ] Deprecate Redux?
+- [ ] Update OPML import/export to support tags and [stick to the spec](https://opml.org/spec2.opml)
 
 ## TODO
 - [ ] Sort by name
 - [ ] Save icon directions in OPML export
+
+- STRETCH: tech stack
+  - [ ] Migrate from Electron to a PWA?
+  - [ ] Deprecate Redux?
+  - [ ] Use pnpm instead of npm?
 
 <hr />
 
@@ -65,12 +68,12 @@ npm run package-mac
 
 ### Developed with
 
-- [Electron](https://github.com/electron/electron)
-- [React](https://github.com/facebook/react)
-- [Redux](https://github.com/reduxjs/redux)
-- [Fluent UI](https://github.com/microsoft/fluentui)
-- [Lovefield](https://github.com/google/lovefield)
-- [Mercury Parser](https://github.com/postlight/mercury-parser)
+- [Electron](https://github.com/electron/electron) (cross-platform)
+- [React](https://github.com/facebook/react) (ui framework)
+- [Redux](https://github.com/reduxjs/redux) (state management)
+- [Fluent UI](https://github.com/microsoft/fluentui) (ui components)
+- [Lovefield](https://github.com/google/lovefield) (sql database written in js)
+- [Mercury Parser](https://github.com/postlight/mercury-parser) (reader)
 
 ### License
 
