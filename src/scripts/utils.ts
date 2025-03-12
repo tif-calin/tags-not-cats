@@ -169,6 +169,7 @@ export function getSearchEngineName(engine: SearchEngines) {
       return intl.get("searchEngine.duckduckgo")
   }
 }
+
 export function webSearch(text: string, engine = SearchEngines.Google) {
   switch (engine) {
     case SearchEngines.Google:
