@@ -31,60 +31,63 @@ type MenuProps = {
 export class Menu extends React.Component<MenuProps> {
   countOverflow = (count: number) => (count >= 1000 ? " 999+" : ` ${count}`)
 
-  getLinkGroups = (): INavLinkGroup[] => [
-    {
-      links: [
-        {
-          name: intl.get("search"),
-          ariaLabel: intl.get("search") + (this.props.searchOn ? " ✓" : " "),
-          key: "search",
-          icon: "Search",
-          onClick: this.props.toggleSearch,
-          url: null,
-        },
-        {
-          name: intl.get("allArticles"),
-          ariaLabel:
-            intl.get("allArticles") +
-            this.countOverflow(
-              Object.values(this.props.sources)
-                .filter(s => !s.hidden)
-                .map(s => s.unreadCount)
-                .reduce((a, b) => a + b, 0)
-            ),
-          key: ALL,
-          icon: "TextDocument",
-          onClick: () => this.props.allArticles(this.props.selected !== ALL),
-          url: null,
-        },
-      ],
-    },
-    {
-      name: intl.get("menu.subscriptions"),
-      links: this.props.groups
-        .filter(g => g.sids.length > 0)
-        .map(g => {
-          if (g.isMultiple) {
-            let sources = g.sids.map(sid => this.props.sources[sid])
-            return {
-              name: g.name,
-              ariaLabel:
-                g.name +
-                this.countOverflow(
-                  sources.map(s => s.unreadCount).reduce((a, b) => a + b, 0)
-                ),
-              key: "g-" + g.index,
-              url: null,
-              isExpanded: g.expanded,
-              onClick: () => this.props.selectSourceGroup(g, "g-" + g.index),
-              links: sources.map(this.getSource),
+  getLinkGroups = (): INavLinkGroup[] => {
+    const subscriptionCount = this.props.groups.reduce((acc, curr) => acc + curr.sids.length, 0)
+    return [
+      {
+        links: [
+          {
+            name: intl.get("search"),
+            ariaLabel: intl.get("search") + (this.props.searchOn ? " ✓" : " "),
+            key: "search",
+            icon: "Search",
+            onClick: this.props.toggleSearch,
+            url: null,
+          },
+          {
+            name: intl.get("allArticles"),
+            ariaLabel:
+              intl.get("allArticles") +
+              this.countOverflow(
+                Object.values(this.props.sources)
+                  .filter(s => !s.hidden)
+                  .map(s => s.unreadCount)
+                  .reduce((a, b) => a + b, 0)
+              ),
+            key: ALL,
+            icon: "TextDocument",
+            onClick: () => this.props.allArticles(this.props.selected !== ALL),
+            url: null,
+          },
+        ],
+      },
+      {
+        name: `${intl.get("menu.subscriptions")} (${subscriptionCount})`,
+        links: this.props.groups
+          .filter(g => g.sids.length > 0)
+          .map(g => {
+            if (g.isMultiple) {
+              let sources = g.sids.map(sid => this.props.sources[sid])
+              return {
+                name: g.name,
+                ariaLabel:
+                  g.name +
+                  this.countOverflow(
+                    sources.map(s => s.unreadCount).reduce((a, b) => a + b, 0)
+                  ),
+                key: "g-" + g.index,
+                url: null,
+                isExpanded: g.expanded,
+                onClick: () => this.props.selectSourceGroup(g, "g-" + g.index),
+                links: sources.map(this.getSource),
+              }
+            } else {
+              return this.getSource(this.props.sources[g.sids[0]])
             }
-          } else {
-            return this.getSource(this.props.sources[g.sids[0]])
-          }
-        }),
-    },
-  ]
+          }),
+      },
+    ]
+  }
 
   getSource = (s: RSSSource): INavLink => ({
     name: s.name,
