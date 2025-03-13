@@ -1,5 +1,5 @@
-import * as React from "react"
-import intl from "react-intl-universal"
+import * as React from "react";
+import intl from "react-intl-universal";
 import {
   Label,
   DefaultButton,
@@ -17,38 +17,34 @@ import {
   MessageBar,
   MessageBarType,
   Toggle,
-} from "@fluentui/react"
-import {
-  SourceState,
-  RssSource,
-  SourceOpenTarget,
-} from "../../scripts/models/source"
-import { urlTest } from "../../scripts/utils"
-import DangerButton from "../utils/danger-button"
+} from "@fluentui/react";
+import { SourceState, RssSource, SourceOpenTarget } from "../../scripts/models/source";
+import { urlTest } from "../../scripts/utils";
+import DangerButton from "../utils/danger-button";
 
 type SourcesTabProps = {
-  sources: SourceState
-  serviceOn: boolean
-  sids: number[]
-  acknowledgeSIDs: () => void
-  addSource: (url: string) => void
-  updateSourceName: (source: RssSource, name: string) => void
-  updateSourceIcon: (source: RssSource, iconUrl: string) => Promise<void>
-  updateSourceOpenTarget: (source: RssSource, target: SourceOpenTarget) => void
-  updateFetchFrequency: (source: RssSource, frequency: number) => void
-  deleteSource: (source: RssSource) => void
-  deleteSources: (sources: RssSource[]) => void
-  importOPML: () => void
-  exportOPML: () => void
-  toggleSourceHidden: (source: RssSource) => void
-}
+  sources: SourceState;
+  serviceOn: boolean;
+  sids: number[];
+  acknowledgeSIDs: () => void;
+  addSource: (url: string) => void;
+  updateSourceName: (source: RssSource, name: string) => void;
+  updateSourceIcon: (source: RssSource, iconUrl: string) => Promise<void>;
+  updateSourceOpenTarget: (source: RssSource, target: SourceOpenTarget) => void;
+  updateFetchFrequency: (source: RssSource, frequency: number) => void;
+  deleteSource: (source: RssSource) => void;
+  deleteSources: (sources: RssSource[]) => void;
+  importOPML: () => void;
+  exportOPML: () => void;
+  toggleSourceHidden: (source: RssSource) => void;
+};
 
 type SourcesTabState = {
-  [formName: string]: string
+  [formName: string]: string;
 } & {
-  selectedSource: RssSource
-  selectedSources: RssSource[]
-}
+  selectedSource: RssSource;
+  selectedSources: RssSource[];
+};
 
 const enum EditDropdownKeys {
   Name = "n",
@@ -57,42 +53,40 @@ const enum EditDropdownKeys {
 }
 
 class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
-  selection: Selection
+  selection: Selection;
 
   constructor(props: SourcesTabProps) {
-    super(props)
+    super(props);
     this.state = {
       newUrl: "",
       newSourceName: "",
       selectedSource: null,
       selectedSources: null,
-    }
+    };
     this.selection = new Selection({
       getKey: s => (s as RssSource).sid,
       onSelectionChanged: () => {
-        let count = this.selection.getSelectedCount()
-        let sources = count
-          ? (this.selection.getSelection() as RssSource[])
-          : null
+        let count = this.selection.getSelectedCount();
+        let sources = count ? (this.selection.getSelection() as RssSource[]) : null;
         this.setState({
           selectedSource: count === 1 ? sources[0] : null,
           selectedSources: count > 1 ? sources : null,
           newSourceName: count === 1 ? sources[0].name : "",
           newSourceIcon: count === 1 ? sources[0].iconurl || "" : "",
           sourceEditOption: EditDropdownKeys.Name,
-        })
+        });
       },
-    })
+    });
   }
 
   componentDidMount = () => {
     if (this.props.sids.length > 0) {
       for (let sid of this.props.sids) {
-        this.selection.setKeySelected(String(sid), true, false)
+        this.selection.setKeySelected(String(sid), true, false);
       }
-      this.props.acknowledgeSIDs()
+      this.props.acknowledgeSIDs();
     }
-  }
+  };
 
   columns = (): IColumn[] => [
     {
@@ -104,8 +98,7 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
       maxWidth: 16,
       minWidth: 16,
       name: intl.get("icon"),
-      onRender: (s: RssSource) =>
-        s.iconurl && <img src={s.iconurl} className="favicon" />,
+      onRender: (s: RssSource) => s.iconurl && <img src={s.iconurl} className="favicon" />,
     },
     {
       key: "name",
@@ -124,17 +117,17 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
       minWidth: 280,
       name: "URL",
     },
-  ]
+  ];
 
   sourceEditOptions = (): IDropdownOption[] => [
     { key: EditDropdownKeys.Name, text: intl.get("name") },
     { key: EditDropdownKeys.Icon, text: intl.get("icon") },
     { key: EditDropdownKeys.Url, text: "URL" },
-  ]
+  ];
 
   onSourceEditOptionChange = (_, option: IDropdownOption) => {
-    this.setState({ sourceEditOption: option.key as string })
-  }
+    this.setState({ sourceEditOption: option.key as string });
+  };
 
   fetchFrequencyOptions = (): IDropdownOption[] => [
     { key: "0", text: intl.get("sources.unlimited") },
@@ -146,18 +139,18 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
     { key: "360", text: intl.get("time.hour", { h: 6 }) },
     { key: "720", text: intl.get("time.hour", { h: 12 }) },
     { key: "1440", text: intl.get("time.day", { d: 1 }) },
-  ]
+  ];
 
   onFetchFrequencyChange = (_, option: IDropdownOption) => {
-    let frequency = parseInt(option.key as string)
-    this.props.updateFetchFrequency(this.state.selectedSource, frequency)
+    let frequency = parseInt(option.key as string);
+    this.props.updateFetchFrequency(this.state.selectedSource, frequency);
     this.setState({
       selectedSource: {
         ...this.state.selectedSource,
         fetchFrequency: frequency,
       } as RssSource,
-    })
-  }
+    });
+  };
 
   sourceOpenTargetChoices = (): IChoiceGroupOption[] => [
     {
@@ -176,58 +169,58 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
       key: String(SourceOpenTarget.External),
       text: intl.get("openExternal"),
     },
-  ]
+  ];
 
   updateSourceName = () => {
-    let newName = this.state.newSourceName.trim()
-    this.props.updateSourceName(this.state.selectedSource, newName)
+    let newName = this.state.newSourceName.trim();
+    this.props.updateSourceName(this.state.selectedSource, newName);
     this.setState({
       selectedSource: {
         ...this.state.selectedSource,
         name: newName,
       } as RssSource,
-    })
-  }
+    });
+  };
 
   updateSourceIcon = () => {
-    let newIcon = this.state.newSourceIcon.trim()
-    this.props.updateSourceIcon(this.state.selectedSource, newIcon)
+    let newIcon = this.state.newSourceIcon.trim();
+    this.props.updateSourceIcon(this.state.selectedSource, newIcon);
     this.setState({
       selectedSource: { ...this.state.selectedSource, iconurl: newIcon },
-    })
-  }
+    });
+  };
 
   handleInputChange = event => {
-    const name: string = event.target.name
-    this.setState({ [name]: event.target.value })
-  }
+    const name: string = event.target.name;
+    this.setState({ [name]: event.target.value });
+  };
 
   addSource = (event: React.FormEvent) => {
-    event.preventDefault()
-    let trimmed = this.state.newUrl.trim().replace(/\/$/, '')
-    if (urlTest(trimmed)) this.props.addSource(trimmed)
-  }
+    event.preventDefault();
+    let trimmed = this.state.newUrl.trim().replace(/\/$/, "");
+    if (urlTest(trimmed)) this.props.addSource(trimmed);
+  };
 
   onOpenTargetChange = (_, option: IChoiceGroupOption) => {
-    let newTarget = parseInt(option.key) as SourceOpenTarget
-    this.props.updateSourceOpenTarget(this.state.selectedSource, newTarget)
+    let newTarget = parseInt(option.key) as SourceOpenTarget;
+    this.props.updateSourceOpenTarget(this.state.selectedSource, newTarget);
     this.setState({
       selectedSource: {
         ...this.state.selectedSource,
         openTarget: newTarget,
       } as RssSource,
-    })
-  }
+    });
+  };
 
   onToggleHidden = () => {
-    this.props.toggleSourceHidden(this.state.selectedSource)
+    this.props.toggleSourceHidden(this.state.selectedSource);
     this.setState({
       selectedSource: {
         ...this.state.selectedSource,
         hidden: !this.state.selectedSource.hidden,
       } as RssSource,
-    })
-  }
+    });
+  };
 
   render = () => (
     <div className="tab-body">
@@ -239,16 +232,10 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
       <Label>{intl.get("sources.opmlFile")}</Label>
       <Stack horizontal>
         <Stack.Item>
-          <PrimaryButton
-            onClick={this.props.importOPML}
-            text={intl.get("sources.import")}
-          />
+          <PrimaryButton onClick={this.props.importOPML} text={intl.get("sources.import")} />
         </Stack.Item>
         <Stack.Item>
-          <DefaultButton
-            onClick={this.props.exportOPML}
-            text={intl.get("sources.export")}
-          />
+          <DefaultButton onClick={this.props.exportOPML} text={intl.get("sources.export")} />
         </Stack.Item>
       </Stack>
 
@@ -257,9 +244,7 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
         <Stack horizontal>
           <Stack.Item grow>
             <TextField
-              onGetErrorMessage={v =>
-                urlTest(v.trim()) ? "" : intl.get("sources.badUrl")
-              }
+              onGetErrorMessage={v => (urlTest(v.trim()) ? "" : intl.get("sources.badUrl"))}
               validateOnLoad={false}
               placeholder={intl.get("sources.inputUrl")}
               value={this.state.newUrl}
@@ -309,9 +294,7 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
               <>
                 <Stack.Item grow>
                   <TextField
-                    onGetErrorMessage={v =>
-                      v.trim().length == 0 ? intl.get("emptyName") : ""
-                    }
+                    onGetErrorMessage={v => (v.trim().length == 0 ? intl.get("emptyName") : "")}
                     validateOnLoad={false}
                     placeholder={intl.get("sources.name")}
                     value={this.state.newSourceName}
@@ -332,9 +315,7 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
               <>
                 <Stack.Item grow>
                   <TextField
-                    onGetErrorMessage={v =>
-                      urlTest(v.trim()) ? "" : intl.get("sources.badUrl")
-                    }
+                    onGetErrorMessage={v => (urlTest(v.trim()) ? "" : intl.get("sources.badUrl"))}
                     validateOnLoad={false}
                     placeholder={intl.get("sources.inputUrl")}
                     value={this.state.newSourceIcon}
@@ -358,9 +339,7 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
                 </Stack.Item>
                 <Stack.Item>
                   <DefaultButton
-                    onClick={() =>
-                      window.utils.writeClipboard(this.state.selectedSource.url)
-                    }
+                    onClick={() => window.utils.writeClipboard(this.state.selectedSource.url)}
                     text={intl.get("context.copy")}
                   />
                 </Stack.Item>
@@ -397,27 +376,20 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
               <Label>{intl.get("sources.hidden")}</Label>
             </Stack.Item>
             <Stack.Item>
-              <Toggle
-                checked={this.state.selectedSource.hidden}
-                onChange={this.onToggleHidden}
-              />
+              <Toggle checked={this.state.selectedSource.hidden} onChange={this.onToggleHidden} />
             </Stack.Item>
           </Stack>
           {!this.state.selectedSource.serviceRef && (
             <Stack horizontal>
               <Stack.Item>
                 <DangerButton
-                  onClick={() =>
-                    this.props.deleteSource(this.state.selectedSource)
-                  }
+                  onClick={() => this.props.deleteSource(this.state.selectedSource)}
                   key={this.state.selectedSource.sid}
                   text={intl.get("sources.delete")}
                 />
               </Stack.Item>
               <Stack.Item>
-                <span className="settings-hint">
-                  {intl.get("sources.deleteWarning")}
-                </span>
+                <span className="settings-hint">{intl.get("sources.deleteWarning")}</span>
               </Stack.Item>
             </Stack>
           )}
@@ -430,16 +402,12 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
             <Stack horizontal>
               <Stack.Item>
                 <DangerButton
-                  onClick={() =>
-                    this.props.deleteSources(this.state.selectedSources)
-                  }
+                  onClick={() => this.props.deleteSources(this.state.selectedSources)}
                   text={intl.get("sources.delete")}
                 />
               </Stack.Item>
               <Stack.Item>
-                <span className="settings-hint">
-                  {intl.get("sources.deleteWarning")}
-                </span>
+                <span className="settings-hint">{intl.get("sources.deleteWarning")}</span>
               </Stack.Item>
             </Stack>
           </>
@@ -449,7 +417,7 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
           </MessageBar>
         ))}
     </div>
-  )
+  );
 }
 
-export default SourcesTab
+export default SourcesTab;

@@ -1,26 +1,26 @@
-import * as React from "react"
-import { Card } from "./card"
-import CardInfo from "./info"
-import Highlights from "./highlights"
-import { ViewConfigs } from "../../schema-types"
-import { SourceTextDirection } from "../../scripts/models/source"
+import * as React from "react";
+import { Card } from "./card";
+import CardInfo from "./info";
+import Highlights from "./highlights";
+import { ViewConfigs } from "../../schema-types";
+import { SourceTextDirection } from "../../scripts/models/source";
 
 const className = (props: Card.Props) => {
-  let cn = ["card", "list-card"]
-  if (props.item.hidden) cn.push("hidden")
-  if (props.selected) cn.push("selected")
-  if (props.viewConfigs & ViewConfigs.FadeRead && props.item.hasRead)
-    cn.push("read")
-  if (props.source.textDir === SourceTextDirection.RTL) cn.push("rtl")
-  return cn.join(" ")
-}
+  let cn = ["card", "list-card"];
+  if (props.item.hidden) cn.push("hidden");
+  if (props.selected) cn.push("selected");
+  if (props.viewConfigs & ViewConfigs.FadeRead && props.item.hasRead) cn.push("read");
+  if (props.source.textDir === SourceTextDirection.RTL) cn.push("rtl");
+  return cn.join(" ");
+};
 
 const ListCard: React.FunctionComponent<Card.Props> = props => (
   <div
     className={className(props)}
     {...Card.bindEventsToProps(props)}
     data-iid={props.item._id}
-    data-is-focusable>
+    data-is-focusable
+  >
     {props.item.thumb && props.viewConfigs & ViewConfigs.ShowCover ? (
       <div className="head">
         <img src={props.item.thumb} />
@@ -38,6 +38,6 @@ const ListCard: React.FunctionComponent<Card.Props> = props => (
       )}
     </div>
   </div>
-)
+);
 
-export default ListCard
+export default ListCard;

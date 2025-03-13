@@ -1,6 +1,6 @@
-import lf from "lovefield"
+import lf from "lovefield";
 
-const sdbSchema = lf.schema.create("sourcesDB", 3)
+const sdbSchema = lf.schema.create("sourcesDB", 3);
 sdbSchema
   .createTable("sources")
   .addColumn("sid", lf.Type.INTEGER)
@@ -16,9 +16,9 @@ sdbSchema
   .addColumn("textDir", lf.Type.NUMBER)
   .addColumn("url", lf.Type.STRING)
   .addNullable(["iconurl", "serviceRef", "rules"])
-  .addIndex("idxURL", ["url"], true)
+  .addIndex("idxURL", ["url"], true);
 
-const idbSchema = lf.schema.create("itemsDB", 1)
+const idbSchema = lf.schema.create("itemsDB", 1);
 idbSchema
   .createTable("items")
   .addColumn("_id", lf.Type.INTEGER)
@@ -39,26 +39,26 @@ idbSchema
   .addColumn("title", lf.Type.STRING)
   .addNullable(["thumb", "creator", "serviceRef"])
   .addIndex("idxDate", ["date"], false, lf.Order.DESC)
-  .addIndex("idxService", ["serviceRef"], false)
+  .addIndex("idxService", ["serviceRef"], false);
 
-export let sourcesDB: lf.Database
-export let sources: lf.schema.Table
-export let itemsDB: lf.Database
-export let items: lf.schema.Table
+export let sourcesDB: lf.Database;
+export let sources: lf.schema.Table;
+export let itemsDB: lf.Database;
+export let items: lf.schema.Table;
 
 async function onUpgradeSourceDB(rawDb: lf.raw.BackStore) {
-  const version = rawDb.getVersion()
+  const version = rawDb.getVersion();
   if (version < 2) {
-    await rawDb.addTableColumn("sources", "textDir", 0)
+    await rawDb.addTableColumn("sources", "textDir", 0);
   }
   if (version < 3) {
-    await rawDb.addTableColumn("sources", "hidden", false)
+    await rawDb.addTableColumn("sources", "hidden", false);
   }
 }
 
 export async function init() {
-  sourcesDB = await sdbSchema.connect({ onUpgrade: onUpgradeSourceDB })
-  sources = sourcesDB.getSchema().table("sources")
-  itemsDB = await idbSchema.connect()
-  items = itemsDB.getSchema().table("items")
+  sourcesDB = await sdbSchema.connect({ onUpgrade: onUpgradeSourceDB });
+  sources = sourcesDB.getSchema().table("sources");
+  itemsDB = await idbSchema.connect();
+  items = itemsDB.getSchema().table("items");
 }

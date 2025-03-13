@@ -1,14 +1,14 @@
-import * as React from "react"
-import Time from "../utils/time"
-import { RssSource } from "../../scripts/models/source"
-import { RSSItem } from "../../scripts/models/item"
+import * as React from "react";
+import Time from "../utils/time";
+import { RssSource } from "../../scripts/models/source";
+import { RSSItem } from "../../scripts/models/item";
 
 type CardInfoProps = {
-  source: RssSource
-  item: RSSItem
-  hideTime?: boolean
-  showCreator?: boolean
-}
+  source: RssSource;
+  item: RSSItem;
+  hideTime?: boolean;
+  showCreator?: boolean;
+};
 
 const CardInfo: React.FunctionComponent<CardInfoProps> = props => (
   <p className="info">
@@ -23,6 +23,6 @@ const CardInfo: React.FunctionComponent<CardInfoProps> = props => (
     {props.item.hasRead ? null : <span className="read-indicator"></span>}
     {props.hideTime ? null : <Time date={props.item.date} />}
   </p>
-)
+);
 
-export default CardInfo
+export default CardInfo;

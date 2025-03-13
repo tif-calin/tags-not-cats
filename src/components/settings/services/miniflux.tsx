@@ -1,7 +1,7 @@
-import * as React from "react"
-import intl from "react-intl-universal"
-import { ServiceConfigsTabProps } from "../service"
-import { SyncService } from "../../../schema-types"
+import * as React from "react";
+import intl from "react-intl-universal";
+import { ServiceConfigsTabProps } from "../service";
+import { SyncService } from "../../../schema-types";
 import {
   Stack,
   Icon,
@@ -14,29 +14,26 @@ import {
   MessageBarType,
   Dropdown,
   IDropdownOption,
-} from "@fluentui/react"
-import DangerButton from "../../utils/danger-button"
-import { urlTest } from "../../../scripts/utils"
-import { MinifluxConfigs } from "../../../scripts/models/services/miniflux"
+} from "@fluentui/react";
+import DangerButton from "../../utils/danger-button";
+import { urlTest } from "../../../scripts/utils";
+import { MinifluxConfigs } from "../../../scripts/models/services/miniflux";
 
 type MinifluxConfigsTabState = {
-  existing: boolean
-  endpoint: string
-  apiKeyAuth: boolean
-  username: string
-  password: string
-  apiKey: string
-  fetchLimit: number
-  importGroups: boolean
-}
+  existing: boolean;
+  endpoint: string;
+  apiKeyAuth: boolean;
+  username: string;
+  password: string;
+  apiKey: string;
+  fetchLimit: number;
+  importGroups: boolean;
+};
 
-class MinifluxConfigsTab extends React.Component<
-  ServiceConfigsTabProps,
-  MinifluxConfigsTabState
-> {
+class MinifluxConfigsTab extends React.Component<ServiceConfigsTabProps, MinifluxConfigsTabState> {
   constructor(props: ServiceConfigsTabProps) {
-    super(props)
-    const configs = props.configs as MinifluxConfigs
+    super(props);
+    const configs = props.configs as MinifluxConfigs;
     this.state = {
       existing: configs.type === SyncService.Miniflux,
       endpoint: configs.endpoint || "",
@@ -46,7 +43,7 @@ class MinifluxConfigsTab extends React.Component<
       apiKey: "",
       fetchLimit: configs.fetchLimit || 250,
       importGroups: true,
-    }
+    };
   }
 
   fetchLimitOptions = (): IDropdownOption[] => [
@@ -59,10 +56,10 @@ class MinifluxConfigsTab extends React.Component<
       key: Number.MAX_SAFE_INTEGER,
       text: intl.get("service.fetchUnlimited"),
     },
-  ]
+  ];
   onFetchLimitOptionChange = (_, option: IDropdownOption) => {
-    this.setState({ fetchLimit: option.key as number })
-  }
+    this.setState({ fetchLimit: option.key as number });
+  };
 
   authenticationOptions = (): IDropdownOption[] => [
     { key: "apiKey", text: "API Key" /*intl.get("service.password")*/ },
@@ -70,47 +67,44 @@ class MinifluxConfigsTab extends React.Component<
       key: "userPass",
       text: intl.get("service.username") + "/" + intl.get("service.password"),
     },
-  ]
+  ];
   onAuthenticationOptionsChange = (_, option: IDropdownOption) => {
-    this.setState({ apiKeyAuth: option.key == "apiKey" })
-  }
+    this.setState({ apiKeyAuth: option.key == "apiKey" });
+  };
 
   handleInputChange = event => {
-    const name: string = event.target.name
+    const name: string = event.target.name;
     // @ts-expect-error
-    this.setState({ [name]: event.target.value })
-  }
+    this.setState({ [name]: event.target.value });
+  };
 
   checkNotEmpty = (v: string) => {
-    return !this.state.existing && v.length == 0 ? intl.get("emptyField") : ""
-  }
+    return !this.state.existing && v.length == 0 ? intl.get("emptyField") : "";
+  };
 
   validateForm = () => {
     return (
       urlTest(this.state.endpoint.trim()) &&
-      (this.state.existing ||
-        this.state.apiKey ||
-        (this.state.username && this.state.password))
-    )
-  }
+      (this.state.existing || this.state.apiKey || (this.state.username && this.state.password))
+    );
+  };
 
   save = async () => {
-    let configs: MinifluxConfigs
+    let configs: MinifluxConfigs;
 
     if (this.state.existing) {
       configs = {
         ...this.props.configs,
         endpoint: this.state.endpoint,
         fetchLimit: this.state.fetchLimit,
-      } as MinifluxConfigs
+      } as MinifluxConfigs;
 
       if (this.state.apiKey || this.state.password)
         configs.authKey = this.state.apiKeyAuth
           ? this.state.apiKey
-          : Buffer.from(
-              this.state.username + ":" + this.state.password,
-              "binary"
-            ).toString("base64")
+          : Buffer.from(this.state.username + ":" + this.state.password, "binary").toString(
+              "base64"
+            );
     } else {
       configs = {
         type: SyncService.Miniflux,
@@ -118,36 +112,32 @@ class MinifluxConfigsTab extends React.Component<
         apiKeyAuth: this.state.apiKeyAuth,
         authKey: this.state.apiKeyAuth
           ? this.state.apiKey
-          : Buffer.from(
-              this.state.username + ":" + this.state.password,
-              "binary"
-            ).toString("base64"),
+          : Buffer.from(this.state.username + ":" + this.state.password, "binary").toString(
+              "base64"
+            ),
         fetchLimit: this.state.fetchLimit,
-      }
+      };
 
-      if (this.state.importGroups) configs.importGroups = true
+      if (this.state.importGroups) configs.importGroups = true;
     }
 
-    this.props.blockActions()
-    const valid = await this.props.authenticate(configs)
+    this.props.blockActions();
+    const valid = await this.props.authenticate(configs);
 
     if (valid) {
-      this.props.save(configs)
-      this.setState({ existing: true })
-      this.props.sync()
+      this.props.save(configs);
+      this.setState({ existing: true });
+      this.props.sync();
     } else {
-      this.props.blockActions()
-      window.utils.showErrorBox(
-        intl.get("service.failure"),
-        intl.get("service.failureHint")
-      )
+      this.props.blockActions();
+      window.utils.showErrorBox(intl.get("service.failure"), intl.get("service.failureHint"));
     }
-  }
+  };
 
   remove = async () => {
-    this.props.exit()
-    await this.props.remove()
-  }
+    this.props.exit();
+    await this.props.remove();
+  };
 
   render() {
     return (
@@ -173,9 +163,7 @@ class MinifluxConfigsTab extends React.Component<
             </Stack.Item>
             <Stack.Item grow>
               <TextField
-                onGetErrorMessage={v =>
-                  urlTest(v.trim()) ? "" : intl.get("sources.badUrl")
-                }
+                onGetErrorMessage={v => (urlTest(v.trim()) ? "" : intl.get("sources.badUrl"))}
                 validateOnLoad={false}
                 name="endpoint"
                 value={this.state.endpoint}
@@ -203,9 +191,7 @@ class MinifluxConfigsTab extends React.Component<
               <Stack.Item grow>
                 <TextField
                   type="password"
-                  placeholder={
-                    this.state.existing ? intl.get("service.unchanged") : ""
-                  }
+                  placeholder={this.state.existing ? intl.get("service.unchanged") : ""}
                   onGetErrorMessage={this.checkNotEmpty}
                   validateOnLoad={false}
                   name="apiKey"
@@ -240,9 +226,7 @@ class MinifluxConfigsTab extends React.Component<
               <Stack.Item grow>
                 <TextField
                   type="password"
-                  placeholder={
-                    this.state.existing ? intl.get("service.unchanged") : ""
-                  }
+                  placeholder={this.state.existing ? intl.get("service.unchanged") : ""}
                   onGetErrorMessage={this.checkNotEmpty}
                   validateOnLoad={false}
                   name="password"
@@ -276,26 +260,21 @@ class MinifluxConfigsTab extends React.Component<
               <PrimaryButton
                 disabled={!this.validateForm()}
                 onClick={this.save}
-                text={
-                  this.state.existing ? intl.get("edit") : intl.get("confirm")
-                }
+                text={this.state.existing ? intl.get("edit") : intl.get("confirm")}
               />
             </Stack.Item>
             <Stack.Item>
               {this.state.existing ? (
                 <DangerButton onClick={this.remove} text={intl.get("delete")} />
               ) : (
-                <DefaultButton
-                  onClick={this.props.exit}
-                  text={intl.get("cancel")}
-                />
+                <DefaultButton onClick={this.props.exit} text={intl.get("cancel")} />
               )}
             </Stack.Item>
           </Stack>
         </Stack>
       </>
-    )
+    );
   }
 }
 
-export default MinifluxConfigsTab
+export default MinifluxConfigsTab;

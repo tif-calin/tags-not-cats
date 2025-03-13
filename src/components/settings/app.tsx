@@ -1,17 +1,8 @@
-import * as React from "react"
-import intl from "react-intl-universal"
-import {
-  urlTest,
-  byteToMB,
-  calculateItemSize,
-  getSearchEngineName,
-} from "../../scripts/utils"
-import { ThemeSettings, SearchEngines } from "../../schema-types"
-import {
-  getThemeSettings,
-  setThemeSettings,
-  exportAll,
-} from "../../scripts/settings"
+import * as React from "react";
+import intl from "react-intl-universal";
+import { urlTest, byteToMB, calculateItemSize, getSearchEngineName } from "../../scripts/utils";
+import { ThemeSettings, SearchEngines } from "../../schema-types";
+import { getThemeSettings, setThemeSettings, exportAll } from "../../scripts/settings";
 import {
   Stack,
   Label,
@@ -23,28 +14,28 @@ import {
   Dropdown,
   IDropdownOption,
   PrimaryButton,
-} from "@fluentui/react"
-import DangerButton from "../utils/danger-button"
+} from "@fluentui/react";
+import DangerButton from "../utils/danger-button";
 
 type AppTabProps = {
-  setLanguage: (option: string) => void
-  setFetchInterval: (interval: number) => void
-  deleteArticles: (days: number) => Promise<void>
-  importAll: () => Promise<void>
-}
+  setLanguage: (option: string) => void;
+  setFetchInterval: (interval: number) => void;
+  deleteArticles: (days: number) => Promise<void>;
+  importAll: () => Promise<void>;
+};
 
 type AppTabState = {
-  pacStatus: boolean
-  pacUrl: string
-  themeSettings: ThemeSettings
-  itemSize: string
-  cacheSize: string
-  deleteIndex: string
-}
+  pacStatus: boolean;
+  pacUrl: string;
+  themeSettings: ThemeSettings;
+  itemSize: string;
+  cacheSize: string;
+  deleteIndex: string;
+};
 
 class AppTab extends React.Component<AppTabProps, AppTabState> {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       pacStatus: window.settings.getProxyStatus(),
       pacUrl: window.settings.getProxy(),
@@ -52,33 +43,33 @@ class AppTab extends React.Component<AppTabProps, AppTabState> {
       itemSize: null,
       cacheSize: null,
       deleteIndex: null,
-    }
-    this.getItemSize()
-    this.getCacheSize()
+    };
+    this.getItemSize();
+    this.getCacheSize();
   }
 
   getCacheSize = () => {
     window.utils.getCacheSize().then(size => {
-      this.setState({ cacheSize: byteToMB(size) })
-    })
-  }
+      this.setState({ cacheSize: byteToMB(size) });
+    });
+  };
   getItemSize = () => {
     calculateItemSize().then(size => {
-      this.setState({ itemSize: byteToMB(size) })
-    })
-  }
+      this.setState({ itemSize: byteToMB(size) });
+    });
+  };
 
   clearCache = () => {
     window.utils.clearCache().then(() => {
-      this.getCacheSize()
-    })
-  }
+      this.getCacheSize();
+    });
+  };
 
   themeChoices = (): IChoiceGroupOption[] => [
     { key: ThemeSettings.Default, text: intl.get("followSystem") },
     { key: ThemeSettings.Light, text: intl.get("app.lightTheme") },
     { key: ThemeSettings.Dark, text: intl.get("app.darkTheme") },
-  ]
+  ];
 
   fetchIntervalOptions = (): IDropdownOption[] => [
     { key: 0, text: intl.get("app.never") },
@@ -88,24 +79,21 @@ class AppTab extends React.Component<AppTabProps, AppTabState> {
     { key: 30, text: intl.get("time.minute", { m: 30 }) },
     { key: 45, text: intl.get("time.minute", { m: 45 }) },
     { key: 60, text: intl.get("time.hour", { h: 1 }) },
-  ]
+  ];
   onFetchIntervalChanged = (item: IDropdownOption) => {
-    this.props.setFetchInterval(item.key as number)
-  }
+    this.props.setFetchInterval(item.key as number);
+  };
 
   searchEngineOptions = (): IDropdownOption[] =>
-    [
-      SearchEngines.Google,
-      SearchEngines.Bing,
-      SearchEngines.Baidu,
-      SearchEngines.DuckDuckGo,
-    ].map(engine => ({
-      key: engine,
-      text: getSearchEngineName(engine),
-    }))
+    [SearchEngines.Google, SearchEngines.Bing, SearchEngines.Baidu, SearchEngines.DuckDuckGo].map(
+      engine => ({
+        key: engine,
+        text: getSearchEngineName(engine),
+      })
+    );
   onSearchEngineChanged = (item: IDropdownOption) => {
-    window.settings.setSearchEngine(item.key as number)
-  }
+    window.settings.setSearchEngine(item.key as number);
+  };
 
   deleteOptions = (): IDropdownOption[] => [
     { key: "7", text: intl.get("app.daysAgo", { days: 7 }) },
@@ -113,18 +101,16 @@ class AppTab extends React.Component<AppTabProps, AppTabState> {
     { key: "21", text: intl.get("app.daysAgo", { days: 21 }) },
     { key: "28", text: intl.get("app.daysAgo", { days: 28 }) },
     { key: "0", text: intl.get("app.deleteAll") },
-  ]
+  ];
 
   deleteChange = (_, item: IDropdownOption) => {
-    this.setState({ deleteIndex: item ? String(item.key) : null })
-  }
+    this.setState({ deleteIndex: item ? String(item.key) : null });
+  };
 
   confirmDelete = () => {
-    this.setState({ itemSize: null })
-    this.props
-      .deleteArticles(parseInt(this.state.deleteIndex))
-      .then(() => this.getItemSize())
-  }
+    this.setState({ itemSize: null });
+    this.props.deleteArticles(parseInt(this.state.deleteIndex)).then(() => this.getItemSize());
+  };
 
   languageOptions = (): IDropdownOption[] => [
     { key: "default", text: intl.get("followSystem") },
@@ -146,31 +132,31 @@ class AppTab extends React.Component<AppTabProps, AppTabState> {
     { key: "ja", text: "日本語" },
     { key: "zh-CN", text: "中文（简体）" },
     { key: "zh-TW", text: "中文（繁體）" },
-  ]
+  ];
 
   toggleStatus = () => {
-    window.settings.toggleProxyStatus()
+    window.settings.toggleProxyStatus();
     this.setState({
       pacStatus: window.settings.getProxyStatus(),
       pacUrl: window.settings.getProxy(),
-    })
-  }
+    });
+  };
 
   handleInputChange = event => {
-    const name: string = event.target.name
+    const name: string = event.target.name;
     // @ts-ignore
-    this.setState({ [name]: event.target.value.trim() })
-  }
+    this.setState({ [name]: event.target.value.trim() });
+  };
 
   setUrl = (event: React.FormEvent) => {
-    event.preventDefault()
-    if (urlTest(this.state.pacUrl)) window.settings.setProxy(this.state.pacUrl)
-  }
+    event.preventDefault();
+    if (urlTest(this.state.pacUrl)) window.settings.setProxy(this.state.pacUrl);
+  };
 
   onThemeChange = (_, option: IChoiceGroupOption) => {
-    setThemeSettings(option.key as ThemeSettings)
-    this.setState({ themeSettings: option.key as ThemeSettings })
-  }
+    setThemeSettings(option.key as ThemeSettings);
+    this.setState({ themeSettings: option.key as ThemeSettings });
+  };
 
   render = () => (
     <div className="tab-body">
@@ -231,9 +217,7 @@ class AppTab extends React.Component<AppTabProps, AppTabState> {
             <Stack.Item grow>
               <TextField
                 required
-                onGetErrorMessage={v =>
-                  urlTest(v.trim()) ? "" : intl.get("app.badUrl")
-                }
+                onGetErrorMessage={v => (urlTest(v.trim()) ? "" : intl.get("app.badUrl"))}
                 placeholder={intl.get("app.pac")}
                 name="pacUrl"
                 onChange={this.handleInputChange}
@@ -264,9 +248,7 @@ class AppTab extends React.Component<AppTabProps, AppTabState> {
         </Stack.Item>
         <Stack.Item>
           <DangerButton
-            disabled={
-              this.state.itemSize === null || this.state.deleteIndex === null
-            }
+            disabled={this.state.itemSize === null || this.state.deleteIndex === null}
             text={intl.get("app.confirmDelete")}
             onClick={this.confirmDelete}
           />
@@ -281,9 +263,7 @@ class AppTab extends React.Component<AppTabProps, AppTabState> {
         <Stack.Item>
           <DefaultButton
             text={intl.get("app.cache")}
-            disabled={
-              this.state.cacheSize === null || this.state.cacheSize === "0MB"
-            }
+            disabled={this.state.cacheSize === null || this.state.cacheSize === "0MB"}
             onClick={this.clearCache}
           />
         </Stack.Item>
@@ -300,14 +280,11 @@ class AppTab extends React.Component<AppTabProps, AppTabState> {
           <PrimaryButton onClick={exportAll} text={intl.get("app.backup")} />
         </Stack.Item>
         <Stack.Item>
-          <DefaultButton
-            onClick={this.props.importAll}
-            text={intl.get("app.restore")}
-          />
+          <DefaultButton onClick={this.props.importAll} text={intl.get("app.restore")} />
         </Stack.Item>
       </Stack>
     </div>
-  )
+  );
 }
 
-export default AppTab
+export default AppTab;

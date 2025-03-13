@@ -70,7 +70,7 @@ declare class ResizeObserver {
    *
    * resizeObserver.observe(divElem);
    */
-  constructor(callback: ResizeObserverCallback)
+  constructor(callback: ResizeObserverCallback);
 
   /**
    * The **disconnect()** method of the
@@ -80,7 +80,7 @@ declare class ResizeObserver {
    * [SVGElement](https://developer.mozilla.org/en-US/docs/Web/API/SVGElement)
    * targets.
    */
-  disconnect: () => void
+  disconnect: () => void;
 
   /**
    * The `observe()` method of the
@@ -102,7 +102,7 @@ declare class ResizeObserver {
    * An options object allowing you to set options for the observation.
    * Currently this only has one possible option that can be set.
    */
-  observe: (target: Element, options?: ResizeObserverObserveOptions) => void
+  observe: (target: Element, options?: ResizeObserverObserveOptions) => void;
 
   /**
    * The **unobserve()** method of the
@@ -111,7 +111,7 @@ declare class ResizeObserver {
    * [Element](https://developer.mozilla.org/en-US/docs/Web/API/Element) or
    * [SVGElement](https://developer.mozilla.org/en-US/docs/Web/API/SVGElement).
    */
-  unobserve: (target: Element) => void
+  unobserve: (target: Element) => void;
 }
 
 interface ResizeObserverObserveOptions {
@@ -121,7 +121,7 @@ interface ResizeObserverObserveOptions {
    *
    * @default "content-box"
    */
-  box?: "content-box" | "border-box"
+  box?: "content-box" | "border-box";
 }
 
 /**
@@ -164,10 +164,7 @@ interface ResizeObserverObserveOptions {
  *
  * resizeObserver.observe(divElem);
  */
-type ResizeObserverCallback = (
-  entries: ResizeObserverEntry[],
-  observer: ResizeObserver
-) => void
+type ResizeObserverCallback = (entries: ResizeObserverEntry[], observer: ResizeObserver) => void;
 
 /**
  * The **ResizeObserverEntry** interface represents the object passed to the
@@ -183,13 +180,13 @@ interface ResizeObserverEntry {
    * An object containing the new border box size of the observed element when
    * the callback is run.
    */
-  readonly borderBoxSize: ResizeObserverEntryBoxSize
+  readonly borderBoxSize: ResizeObserverEntryBoxSize;
 
   /**
    * An object containing the new content box size of the observed element when
    * the callback is run.
    */
-  readonly contentBoxSize: ResizeObserverEntryBoxSize
+  readonly contentBoxSize: ResizeObserverEntryBoxSize;
 
   /**
    * A [DOMRectReadOnly](https://developer.mozilla.org/en-US/docs/Web/API/DOMRectReadOnly)
@@ -200,7 +197,7 @@ interface ResizeObserverEntry {
    * in future versions.
    */
   // node_modules/typescript/lib/lib.dom.d.ts
-  readonly contentRect: DOMRectReadOnly
+  readonly contentRect: DOMRectReadOnly;
 
   /**
    * A reference to the
@@ -208,7 +205,7 @@ interface ResizeObserverEntry {
    * [SVGElement](https://developer.mozilla.org/en-US/docs/Web/API/SVGElement)
    * being observed.
    */
-  readonly target: Element
+  readonly target: Element;
 }
 
 /**
@@ -225,7 +222,7 @@ interface ResizeObserverEntryBoxSize {
    * this is the vertical dimension, or height; if the writing-mode is vertical,
    * this is the horizontal dimension, or width.
    */
-  blockSize: number
+  blockSize: number;
 
   /**
    * The length of the observed element's border box in the inline dimension.
@@ -234,9 +231,9 @@ interface ResizeObserverEntryBoxSize {
    * this is the horizontal dimension, or width; if the writing-mode is
    * vertical, this is the vertical dimension, or height.
    */
-  inlineSize: number
+  inlineSize: number;
 }
 
 interface Window {
-  ResizeObserver: typeof ResizeObserver
+  ResizeObserver: typeof ResizeObserver;
 }

@@ -1,20 +1,20 @@
 export class SourceGroup {
-  isMultiple: boolean
-  sids: number[]
-  name?: string
-  expanded?: boolean
-  index?: number // available only from menu or groups tab container
+  isMultiple: boolean;
+  sids: number[];
+  name?: string;
+  expanded?: boolean;
+  index?: number; // available only from menu or groups tab container
 
   constructor(sids: number[], name: string = null) {
-    name = (name && name.trim()) || "Source group"
+    name = (name && name.trim()) || "Source group";
     if (sids.length == 1) {
-      this.isMultiple = false
+      this.isMultiple = false;
     } else {
-      this.isMultiple = true
-      this.name = name
-      this.expanded = true
+      this.isMultiple = true;
+      this.name = name;
+      this.expanded = true;
     }
-    this.sids = sids
+    this.sids = sids;
   }
 }
 
@@ -63,8 +63,8 @@ export const enum SyncService {
   Nextcloud,
 }
 export interface ServiceConfigs {
-  importGroups?: boolean
-  type: SyncService
+  importGroups?: boolean;
+  type: SyncService;
 }
 
 export const enum WindowStateListenerType {
@@ -74,28 +74,28 @@ export const enum WindowStateListenerType {
 }
 
 export interface TouchBarTexts {
-  markAll: string
-  menu: string
-  notifications: string
-  refresh: string
-  search: string
+  markAll: string;
+  menu: string;
+  notifications: string;
+  refresh: string;
+  search: string;
 }
 
 export type SchemaTypes = {
-  fetchInterval: number
-  filterType: number
-  fontFamily: string
-  fontSize: number
-  listViewConfigs: ViewConfigs
-  locale: string
-  menuOn: boolean
-  pac: string
-  pacOn: boolean
-  searchEngine: SearchEngines
-  serviceConfigs: ServiceConfigs
-  sourceGroups: SourceGroup[]
-  theme: ThemeSettings
-  useNeDB: boolean
-  version: string
-  view: ViewType
-}
+  fetchInterval: number;
+  filterType: number;
+  fontFamily: string;
+  fontSize: number;
+  listViewConfigs: ViewConfigs;
+  locale: string;
+  menuOn: boolean;
+  pac: string;
+  pacOn: boolean;
+  searchEngine: SearchEngines;
+  serviceConfigs: ServiceConfigs;
+  sourceGroups: SourceGroup[];
+  theme: ThemeSettings;
+  useNeDB: boolean;
+  version: string;
+  view: ViewType;
+};

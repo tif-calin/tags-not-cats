@@ -1,28 +1,27 @@
-import { app, ipcMain, Menu, nativeTheme } from "electron"
-import { ThemeSettings, SchemaTypes } from "./schema-types"
-import { store } from "./main/settings"
-import performUpdate from "./main/update-scripts"
-import { WindowManager } from "./main/window"
+import { app, ipcMain, Menu, nativeTheme } from "electron";
+import { ThemeSettings, SchemaTypes } from "./schema-types";
+import { store } from "./main/settings";
+import performUpdate from "./main/update-scripts";
+import { WindowManager } from "./main/window";
 
 if (!process.mas) {
-  const locked = app.requestSingleInstanceLock()
+  const locked = app.requestSingleInstanceLock();
   if (!locked) {
-    app.quit()
+    app.quit();
   }
 }
 
-if (!app.isPackaged) app.setAppUserModelId(process.execPath)
-else if (process.platform === "win32")
-  app.setAppUserModelId("me.hyliu.fluentreader")
+if (!app.isPackaged) app.setAppUserModelId(process.execPath);
+else if (process.platform === "win32") app.setAppUserModelId("me.hyliu.fluentreader");
 
-let restarting = false
+let restarting = false;
 
 function init() {
-  performUpdate(store)
-  nativeTheme.themeSource = store.get("theme", ThemeSettings.Default)
+  performUpdate(store);
+  nativeTheme.themeSource = store.get("theme", ThemeSettings.Default);
 }
 
-init()
+init();
 
 if (process.platform === "darwin") {
   const template = [
@@ -33,14 +32,14 @@ if (process.platform === "darwin") {
           label: "Hide",
           accelerator: "Command+H",
           click: () => {
-            app.hide()
+            app.hide();
           },
         },
         {
           label: "Quit",
           accelerator: "Command+Q",
           click: () => {
-            if (winManager.hasWindow) winManager.mainWindow.close()
+            if (winManager.hasWindow) winManager.mainWindow.close();
           },
         },
       ],
@@ -83,55 +82,55 @@ if (process.platform === "darwin") {
           label: "Close",
           accelerator: "Command+W",
           click: () => {
-            if (winManager.hasWindow) winManager.mainWindow.close()
+            if (winManager.hasWindow) winManager.mainWindow.close();
           },
         },
         {
           label: "Minimize",
           accelerator: "Command+M",
           click: () => {
-            if (winManager.hasWindow()) winManager.mainWindow.minimize()
+            if (winManager.hasWindow()) winManager.mainWindow.minimize();
           },
         },
         { label: "Zoom", click: () => winManager.zoom() },
       ],
     },
-  ]
-  Menu.setApplicationMenu(Menu.buildFromTemplate(template))
+  ];
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 } else {
-  Menu.setApplicationMenu(null)
+  Menu.setApplicationMenu(null);
 }
 
-const winManager = new WindowManager()
+const winManager = new WindowManager();
 
 app.on("window-all-closed", () => {
   if (winManager.hasWindow()) {
     winManager.mainWindow.webContents.session.clearStorageData({
       storages: ["cookies", "localstorage"],
-    })
+    });
   }
-  winManager.mainWindow = null
+  winManager.mainWindow = null;
   if (restarting) {
-    restarting = false
-    winManager.createWindow()
+    restarting = false;
+    winManager.createWindow();
   } else {
-    app.quit()
+    app.quit();
   }
-})
+});
 
 ipcMain.handle("import-all-settings", (_, configs: SchemaTypes) => {
-  restarting = true
-  store.clear()
+  restarting = true;
+  store.clear();
   for (let [key, value] of Object.entries(configs)) {
     // @ts-ignore
-    store.set(key, value)
+    store.set(key, value);
   }
-  performUpdate(store)
-  nativeTheme.themeSource = store.get("theme", ThemeSettings.Default)
+  performUpdate(store);
+  nativeTheme.themeSource = store.get("theme", ThemeSettings.Default);
   setTimeout(
     () => {
-      winManager.mainWindow.close()
+      winManager.mainWindow.close();
     },
     process.platform === "darwin" ? 1000 : 0
-  ) // Why ???
-})
+  ); // Why ???
+});

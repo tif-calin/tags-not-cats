@@ -1,13 +1,7 @@
-import intl from "react-intl-universal"
-import * as db from "../db"
-import lf from "lovefield"
-import {
-  fetchFavicon,
-  ActionStatus,
-  AppThunk,
-  parseRSS,
-  MyParserItem,
-} from "../utils"
+import intl from "react-intl-universal";
+import * as db from "../db";
+import lf from "lovefield";
+import { fetchFavicon, ActionStatus, AppThunk, parseRSS, MyParserItem } from "../utils";
 import {
   RSSItem,
   insertItems,
@@ -16,10 +10,10 @@ import {
   MARK_READ,
   MARK_UNREAD,
   MARK_ALL_READ,
-} from "./item"
-import { saveSettings } from "./app"
-import { SourceRule } from "./rule"
-import { fixBrokenGroups } from "./group"
+} from "./item";
+import { saveSettings } from "./app";
+import { SourceRule } from "./rule";
+import { fixBrokenGroups } from "./group";
 
 export const enum SourceOpenTarget {
   Local,
@@ -36,44 +30,49 @@ export const enum SourceTextDirection {
 
 export class RssSource {
   /** in minutes */
-  fetchFrequency: number
-  hidden: boolean
-  iconurl?: string
-  lastFetched: Date
-  name: string
-  openTarget: SourceOpenTarget
-  rules?: SourceRule[]
-  serviceRef?: string
-  sid: number
-  textDir: SourceTextDirection
-  unreadCount: number
-  url: string
+  fetchFrequency: number;
+  hidden: boolean;
+  iconurl?: string;
+  lastFetched: Date;
+  name: string;
+  openTarget: SourceOpenTarget;
+  rules?: SourceRule[];
+  serviceRef?: string;
+  sid: number;
+  textDir: SourceTextDirection;
+  unreadCount: number;
+  url: string;
 
-  constructor({ url, name = null, iconurl }: { url: string; name: string | null; iconurl?: string; }) {
-    this.fetchFrequency = 0
-    this.hidden = false
-    this.iconurl = iconurl
-    this.lastFetched = new Date()
-    this.name = name
-    this.openTarget = SourceOpenTarget.Local
-    this.textDir = SourceTextDirection.LTR
-    this.url = url
+  constructor({
+    url,
+    name = null,
+    iconurl,
+  }: {
+    url: string;
+    name: string | null;
+    iconurl?: string;
+  }) {
+    this.fetchFrequency = 0;
+    this.hidden = false;
+    this.iconurl = iconurl;
+    this.lastFetched = new Date();
+    this.name = name;
+    this.openTarget = SourceOpenTarget.Local;
+    this.textDir = SourceTextDirection.LTR;
+    this.url = url;
   }
 
   static async fetchMetaData(source: RssSource) {
-    let feed = await parseRSS(source.url)
+    let feed = await parseRSS(source.url);
     if (!source.name) {
-      if (feed.title) source.name = feed.title.trim()
-      source.name = source.name || intl.get("sources.untitled")
+      if (feed.title) source.name = feed.title.trim();
+      source.name = source.name || intl.get("sources.untitled");
     }
-    return feed
+    return feed;
   }
 
-  private static async checkItem(
-    source: RssSource,
-    item: MyParserItem
-  ): Promise<RSSItem> {
-    let i = new RSSItem(item, source)
+  private static async checkItem(source: RssSource, item: MyParserItem): Promise<RSSItem> {
+    let i = new RSSItem(item, source);
     const items = (await db.itemsDB
       .select()
       .from(db.items)
@@ -85,87 +84,84 @@ export class RssSource {
         )
       )
       .limit(1)
-      .exec()) as RSSItem[]
+      .exec()) as RSSItem[];
     if (items.length === 0) {
-      RSSItem.parseContent(i, item)
-      if (source.rules) SourceRule.applyAll(source.rules, i)
-      return i
+      RSSItem.parseContent(i, item);
+      if (source.rules) SourceRule.applyAll(source.rules, i);
+      return i;
     } else {
-      return null
+      return null;
     }
   }
 
-  static checkItems(
-    source: RssSource,
-    items: MyParserItem[]
-  ): Promise<RSSItem[]> {
+  static checkItems(source: RssSource, items: MyParserItem[]): Promise<RSSItem[]> {
     return new Promise<RSSItem[]>((resolve, reject) => {
-      let p = new Array<Promise<RSSItem>>()
+      let p = new Array<Promise<RSSItem>>();
       for (let item of items) {
-        p.push(this.checkItem(source, item))
+        p.push(this.checkItem(source, item));
       }
       Promise.all(p)
         .then(values => {
-          resolve(values.filter(v => v != null))
+          resolve(values.filter(v => v != null));
         })
         .catch(e => {
-          reject(e)
-        })
-    })
+          reject(e);
+        });
+    });
   }
 
   static async fetchItems(source: RssSource) {
-    let feed = await parseRSS(source.url)
-    return await this.checkItems(source, feed.items)
+    let feed = await parseRSS(source.url);
+    return await this.checkItems(source, feed.items);
   }
 }
 
 export type SourceState = {
-  [sid: number]: RssSource
-}
+  [sid: number]: RssSource;
+};
 
-export const INIT_SOURCES = "INIT_SOURCES"
-export const ADD_SOURCE = "ADD_SOURCE"
-export const UPDATE_SOURCE = "UPDATE_SOURCE"
-export const UPDATE_UNREAD_COUNTS = "UPDATE_UNREAD_COUNTS"
-export const DELETE_SOURCE = "DELETE_SOURCE"
-export const HIDE_SOURCE = "HIDE_SOURCE"
-export const UNHIDE_SOURCE = "UNHIDE_SOURCE"
+export const INIT_SOURCES = "INIT_SOURCES";
+export const ADD_SOURCE = "ADD_SOURCE";
+export const UPDATE_SOURCE = "UPDATE_SOURCE";
+export const UPDATE_UNREAD_COUNTS = "UPDATE_UNREAD_COUNTS";
+export const DELETE_SOURCE = "DELETE_SOURCE";
+export const HIDE_SOURCE = "HIDE_SOURCE";
+export const UNHIDE_SOURCE = "UNHIDE_SOURCE";
 
 interface InitSourcesAction {
-  type: typeof INIT_SOURCES
-  status: ActionStatus
-  sources?: SourceState
-  err?
+  type: typeof INIT_SOURCES;
+  status: ActionStatus;
+  sources?: SourceState;
+  err?;
 }
 
 interface AddSourceAction {
-  type: typeof ADD_SOURCE
-  status: ActionStatus
-  batch: boolean
-  source?: RssSource
-  err?
+  type: typeof ADD_SOURCE;
+  status: ActionStatus;
+  batch: boolean;
+  source?: RssSource;
+  err?;
 }
 
 interface UpdateSourceAction {
-  type: typeof UPDATE_SOURCE
-  source: RssSource
+  type: typeof UPDATE_SOURCE;
+  source: RssSource;
 }
 
 interface UpdateUnreadCountsAction {
-  type: typeof UPDATE_UNREAD_COUNTS
-  sources: SourceState
+  type: typeof UPDATE_UNREAD_COUNTS;
+  sources: SourceState;
 }
 
 interface DeleteSourceAction {
-  type: typeof DELETE_SOURCE
-  source: RssSource
+  type: typeof DELETE_SOURCE;
+  source: RssSource;
 }
 
 interface ToggleSourceHiddenAction {
-  type: typeof HIDE_SOURCE | typeof UNHIDE_SOURCE
-  status: ActionStatus
-  source: RssSource
+  type: typeof HIDE_SOURCE | typeof UNHIDE_SOURCE;
+  status: ActionStatus;
+  source: RssSource;
 }
 
 export type SourceActionTypes =
@@ -174,13 +170,13 @@ export type SourceActionTypes =
   | UpdateSourceAction
   | UpdateUnreadCountsAction
   | DeleteSourceAction
-  | ToggleSourceHiddenAction
+  | ToggleSourceHiddenAction;
 
 export function initSourcesRequest(): SourceActionTypes {
   return {
     type: INIT_SOURCES,
     status: ActionStatus.Request,
-  }
+  };
 }
 
 export function initSourcesSuccess(sources: SourceState): SourceActionTypes {
@@ -188,7 +184,7 @@ export function initSourcesSuccess(sources: SourceState): SourceActionTypes {
     type: INIT_SOURCES,
     status: ActionStatus.Success,
     sources: sources,
-  }
+  };
 }
 
 export function initSourcesFailure(err): SourceActionTypes {
@@ -196,7 +192,7 @@ export function initSourcesFailure(err): SourceActionTypes {
     type: INIT_SOURCES,
     status: ActionStatus.Failure,
     err: err,
-  }
+  };
 }
 
 async function unreadCount(sources: SourceState): Promise<SourceState> {
@@ -205,46 +201,43 @@ async function unreadCount(sources: SourceState): Promise<SourceState> {
     .from(db.items)
     .where(db.items.hasRead.eq(false))
     .groupBy(db.items.source)
-    .exec()
+    .exec();
   for (let row of rows) {
-    sources[row["source"]].unreadCount = row["COUNT(_id)"]
+    sources[row["source"]].unreadCount = row["COUNT(_id)"];
   }
-  return sources
+  return sources;
 }
 
 export function updateUnreadCounts(): AppThunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const sources: SourceState = {}
+    const sources: SourceState = {};
     for (let source of Object.values(getState().sources)) {
       sources[source.sid] = {
         ...source,
         unreadCount: 0,
-      }
+      };
     }
     dispatch({
       type: UPDATE_UNREAD_COUNTS,
       sources: await unreadCount(sources),
-    })
-  }
+    });
+  };
 }
 
 export function initSources(): AppThunk<Promise<void>> {
   return async dispatch => {
-    dispatch(initSourcesRequest())
-    await db.init()
-    const sources = (await db.sourcesDB
-      .select()
-      .from(db.sources)
-      .exec()) as RssSource[]
-    const state: SourceState = {}
+    dispatch(initSourcesRequest());
+    await db.init();
+    const sources = (await db.sourcesDB.select().from(db.sources).exec()) as RssSource[];
+    const state: SourceState = {};
     for (let source of sources) {
-      source.unreadCount = 0
-      state[source.sid] = source
+      source.unreadCount = 0;
+      state[source.sid] = source;
     }
-    await unreadCount(state)
-    dispatch(fixBrokenGroups(state))
-    dispatch(initSourcesSuccess(state))
-  }
+    await unreadCount(state);
+    dispatch(fixBrokenGroups(state));
+    dispatch(initSourcesSuccess(state));
+  };
 }
 
 export function addSourceRequest(batch: boolean): SourceActionTypes {
@@ -252,19 +245,16 @@ export function addSourceRequest(batch: boolean): SourceActionTypes {
     type: ADD_SOURCE,
     batch: batch,
     status: ActionStatus.Request,
-  }
+  };
 }
 
-export function addSourceSuccess(
-  source: RssSource,
-  batch: boolean
-): SourceActionTypes {
+export function addSourceSuccess(source: RssSource, batch: boolean): SourceActionTypes {
   return {
     type: ADD_SOURCE,
     batch: batch,
     status: ActionStatus.Success,
     source: source,
-  }
+  };
 }
 
 export function addSourceFailure(err, batch: boolean): SourceActionTypes {
@@ -273,31 +263,31 @@ export function addSourceFailure(err, batch: boolean): SourceActionTypes {
     batch: batch,
     status: ActionStatus.Failure,
     err: err,
-  }
+  };
 }
 
-let insertPromises = Promise.resolve()
+let insertPromises = Promise.resolve();
 export function insertSource(source: RssSource): AppThunk<Promise<RssSource>> {
   return (_, getState) => {
     return new Promise((resolve, reject) => {
       insertPromises = insertPromises.then(async () => {
-        let sids = Object.values(getState().sources).map(s => s.sid)
-        source.sid = Math.max(...sids, -1) + 1
-        const row = db.sources.createRow(source)
+        let sids = Object.values(getState().sources).map(s => s.sid);
+        source.sid = Math.max(...sids, -1) + 1;
+        const row = db.sources.createRow(source);
         try {
           const inserted = (await db.sourcesDB
             .insert()
             .into(db.sources)
             .values([row])
-            .exec()) as RssSource[]
-          resolve(inserted[0])
+            .exec()) as RssSource[];
+          resolve(inserted[0]);
         } catch (err) {
-          if (err.code === 201) reject(intl.get("sources.exist"))
-          else reject(err)
+          if (err.code === 201) reject(intl.get("sources.exist"));
+          else reject(err);
         }
-      })
-    })
-  }
+      });
+    });
+  };
 }
 
 export function addSource({
@@ -312,136 +302,118 @@ export function addSource({
   url: string;
 }): AppThunk<Promise<number>> {
   return async (dispatch, getState) => {
-    const app = getState().app
-    if (!app.sourceInit) throw new Error("Sources not initialized.")
-    dispatch(addSourceRequest(batch))
-    const source = new RssSource({ url, name, iconurl })
+    const app = getState().app;
+    if (!app.sourceInit) throw new Error("Sources not initialized.");
+    dispatch(addSourceRequest(batch));
+    const source = new RssSource({ url, name, iconurl });
     try {
-      const feed = await RssSource.fetchMetaData(source)
-      const inserted = await dispatch(insertSource(source))
-      inserted.unreadCount = feed.items.length
-      dispatch(addSourceSuccess(inserted, batch))
-      window.settings.saveGroups(getState().groups)
-      dispatch(updateFavicon([inserted.sid]))
-      const items = await RssSource.checkItems(inserted, feed.items)
-      await insertItems(items)
-      return inserted.sid
+      const feed = await RssSource.fetchMetaData(source);
+      const inserted = await dispatch(insertSource(source));
+      inserted.unreadCount = feed.items.length;
+      dispatch(addSourceSuccess(inserted, batch));
+      window.settings.saveGroups(getState().groups);
+      dispatch(updateFavicon([inserted.sid]));
+      const items = await RssSource.checkItems(inserted, feed.items);
+      await insertItems(items);
+      return inserted.sid;
     } catch (e) {
-      dispatch(addSourceFailure(e, batch))
+      dispatch(addSourceFailure(e, batch));
       if (!batch) {
         window.utils.showErrorBox(
           intl.get("sources.errorAdd"),
           String(e),
           intl.get("context.copy")
-        )
+        );
       }
-      throw e
+      throw e;
     }
-  }
+  };
 }
 
 export function updateSourceDone(source: RssSource): SourceActionTypes {
   return {
     type: UPDATE_SOURCE,
     source: source,
-  }
+  };
 }
 
 export function updateSource(source: RssSource): AppThunk<Promise<void>> {
   return async dispatch => {
-    let sourceCopy = { ...source }
-    delete sourceCopy.unreadCount
-    const row = db.sources.createRow(sourceCopy)
-    await db.sourcesDB.insertOrReplace().into(db.sources).values([row]).exec()
-    dispatch(updateSourceDone(source))
-  }
+    let sourceCopy = { ...source };
+    delete sourceCopy.unreadCount;
+    const row = db.sources.createRow(sourceCopy);
+    await db.sourcesDB.insertOrReplace().into(db.sources).values([row]).exec();
+    dispatch(updateSourceDone(source));
+  };
 }
 
 export function deleteSourceDone(source: RssSource): SourceActionTypes {
   return {
     type: DELETE_SOURCE,
     source: source,
-  }
+  };
 }
 
-export function deleteSource(
-  source: RssSource,
-  batch = false
-): AppThunk<Promise<void>> {
+export function deleteSource(source: RssSource, batch = false): AppThunk<Promise<void>> {
   return async (dispatch, getState) => {
-    if (!batch) dispatch(saveSettings())
+    if (!batch) dispatch(saveSettings());
     try {
-      await db.itemsDB
-        .delete()
-        .from(db.items)
-        .where(db.items.source.eq(source.sid))
-        .exec()
-      await db.sourcesDB
-        .delete()
-        .from(db.sources)
-        .where(db.sources.sid.eq(source.sid))
-        .exec()
-      dispatch(deleteSourceDone(source))
-      window.settings.saveGroups(getState().groups)
+      await db.itemsDB.delete().from(db.items).where(db.items.source.eq(source.sid)).exec();
+      await db.sourcesDB.delete().from(db.sources).where(db.sources.sid.eq(source.sid)).exec();
+      dispatch(deleteSourceDone(source));
+      window.settings.saveGroups(getState().groups);
     } catch (err) {
-      console.log(err)
+      console.log(err);
     } finally {
-      if (!batch) dispatch(saveSettings())
+      if (!batch) dispatch(saveSettings());
     }
-  }
+  };
 }
 
 export function deleteSources(sources: RssSource[]): AppThunk<Promise<void>> {
   return async dispatch => {
-    dispatch(saveSettings())
+    dispatch(saveSettings());
     for (let source of sources) {
-      await dispatch(deleteSource(source, true))
+      await dispatch(deleteSource(source, true));
     }
-    dispatch(saveSettings())
-  }
+    dispatch(saveSettings());
+  };
 }
 
 export function toggleSourceHidden(source: RssSource): AppThunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const sourceCopy: RssSource = { ...getState().sources[source.sid] }
-    sourceCopy.hidden = !sourceCopy.hidden
+    const sourceCopy: RssSource = { ...getState().sources[source.sid] };
+    sourceCopy.hidden = !sourceCopy.hidden;
     dispatch({
       type: sourceCopy.hidden ? HIDE_SOURCE : UNHIDE_SOURCE,
       status: ActionStatus.Success,
       source: sourceCopy,
-    })
-    await dispatch(updateSource(sourceCopy))
-  }
+    });
+    await dispatch(updateSource(sourceCopy));
+  };
 }
 
-export function updateFavicon(
-  sids?: number[],
-  force = false
-): AppThunk<Promise<void>> {
+export function updateFavicon(sids?: number[], force = false): AppThunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const initSources = getState().sources
+    const initSources = getState().sources;
     if (!sids) {
       sids = Object.values(initSources)
         .filter(s => s.iconurl === undefined)
-        .map(s => s.sid)
+        .map(s => s.sid);
     } else {
-      sids = sids.filter(sid => sid in initSources)
+      sids = sids.filter(sid => sid in initSources);
     }
     const promises = sids.map(async sid => {
-      const url = initSources[sid].url
-      let favicon = (await fetchFavicon(url)) || ""
-      const source = getState().sources[sid]
-      if (
-        source &&
-        source.url === url &&
-        (force || source.iconurl === undefined)
-      ) {
-        source.iconurl = favicon
-        await dispatch(updateSource(source))
+      const url = initSources[sid].url;
+      let favicon = (await fetchFavicon(url)) || "";
+      const source = getState().sources[sid];
+      if (source && source.url === url && (force || source.iconurl === undefined)) {
+        source.iconurl = favicon;
+        await dispatch(updateSource(source));
       }
-    })
-    await Promise.all(promises)
-  }
+    });
+    await Promise.all(promises);
+  };
 }
 
 export function sourceReducer(
@@ -452,59 +424,59 @@ export function sourceReducer(
     case INIT_SOURCES:
       switch (action.status) {
         case ActionStatus.Success:
-          return action.sources
+          return action.sources;
         default:
-          return state
+          return state;
       }
     case UPDATE_UNREAD_COUNTS:
-      return action.sources
+      return action.sources;
     case ADD_SOURCE:
       switch (action.status) {
         case ActionStatus.Success:
           return {
             ...state,
             [action.source.sid]: action.source,
-          }
+          };
         default:
-          return state
+          return state;
       }
     case UPDATE_SOURCE:
       return {
         ...state,
         [action.source.sid]: action.source,
-      }
+      };
     case DELETE_SOURCE: {
-      delete state[action.source.sid]
-      return { ...state }
+      delete state[action.source.sid];
+      return { ...state };
     }
     case FETCH_ITEMS: {
       switch (action.status) {
         case ActionStatus.Success: {
-          let updateMap = new Map<number, number>()
+          let updateMap = new Map<number, number>();
           for (let item of action.items) {
             if (!item.hasRead) {
               updateMap.set(
                 item.source,
                 updateMap.has(item.source) ? updateMap.get(item.source) + 1 : 1
-              )
+              );
             }
           }
-          let nextState = {} as SourceState
+          let nextState = {} as SourceState;
           for (let [s, source] of Object.entries(state)) {
-            let sid = parseInt(s)
+            let sid = parseInt(s);
             if (updateMap.has(sid)) {
               nextState[sid] = {
                 ...source,
                 unreadCount: source.unreadCount + updateMap.get(sid),
-              } as RssSource
+              } as RssSource;
             } else {
-              nextState[sid] = source
+              nextState[sid] = source;
             }
           }
-          return nextState
+          return nextState;
         }
         default:
-          return state
+          return state;
       }
     }
     case MARK_UNREAD:
@@ -514,21 +486,20 @@ export function sourceReducer(
         [action.item.source]: {
           ...state[action.item.source],
           unreadCount:
-            state[action.item.source].unreadCount +
-            (action.type === MARK_UNREAD ? 1 : -1),
+            state[action.item.source].unreadCount + (action.type === MARK_UNREAD ? 1 : -1),
         } as RssSource,
-      }
+      };
     case MARK_ALL_READ: {
-      let nextState = { ...state }
+      let nextState = { ...state };
       action.sids.forEach(sid => {
         nextState[sid] = {
           ...state[sid],
           unreadCount: action.time ? state[sid].unreadCount : 0,
-        }
-      })
-      return nextState
+        };
+      });
+      return nextState;
     }
     default:
-      return state
+      return state;
   }
 }
