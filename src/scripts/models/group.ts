@@ -4,7 +4,7 @@ import {
   ADD_SOURCE,
   DELETE_SOURCE,
   addSource,
-  RSSSource,
+  RssSource,
   SourceState,
 } from "./source"
 import { SourceGroup } from "../../schema-types"

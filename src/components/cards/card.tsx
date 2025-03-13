@@ -1,5 +1,5 @@
 import * as React from "react"
-import { RSSSource, SourceOpenTarget } from "../../scripts/models/source"
+import { RssSource, SourceOpenTarget } from "../../scripts/models/source"
 import { RSSItem } from "../../scripts/models/item"
 import { platformCtrl } from "../../scripts/utils"
 import { FeedFilter } from "../../scripts/models/feed"
@@ -9,7 +9,7 @@ export namespace Card {
   export type Props = {
     feedId: string
     item: RSSItem
-    source: RSSSource
+    source: RssSource
     filter: FeedFilter
     selected?: boolean
     viewConfigs?: ViewConfigs

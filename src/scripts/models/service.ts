@@ -7,7 +7,7 @@ import { saveSettings, pushNotification } from "./app"
 import {
   deleteSource,
   updateUnreadCounts,
-  RSSSource,
+  RssSource,
   insertSource,
   addSourceSuccess,
   updateSource,
@@ -24,7 +24,7 @@ import { nextcloudServiceHooks } from "./services/nextcloud"
 export interface ServiceHooks {
   authenticate?: (configs: ServiceConfigs) => Promise<boolean>
   reauthenticate?: (configs: ServiceConfigs) => Promise<ServiceConfigs>
-  updateSources?: () => AppThunk<Promise<[RSSSource[], Map<string, string>]>>
+  updateSources?: () => AppThunk<Promise<[RssSource[], Map<string, string>]>>
   fetchItems?: () => AppThunk<Promise<[RSSItem[], ServiceConfigs]>>
   syncItems?: () => AppThunk<Promise<[Set<string>, Set<string>]>>
   markRead?: (item: RSSItem) => AppThunk
@@ -108,7 +108,7 @@ function updateSources(
 ): AppThunk<Promise<void>> {
   return async (dispatch, getState) => {
     const [sources, groupsMap] = await dispatch(hook())
-    const existing = new Map<string, RSSSource>()
+    const existing = new Map<string, RssSource>()
     for (let source of Object.values(getState().sources)) {
       if (source.serviceRef) {
         existing.set(source.serviceRef, source)
@@ -127,7 +127,7 @@ function updateSources(
           .select()
           .from(db.sources)
           .where(db.sources.url.eq(s.url))
-          .exec()) as RSSSource[]
+          .exec()) as RssSource[]
         if (docs.length === 0) {
           // Create a new source
           forceSettings()

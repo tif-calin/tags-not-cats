@@ -1,7 +1,7 @@
 import * as React from "react"
 import intl from "react-intl-universal"
 import { SourceGroup } from "../../schema-types"
-import { SourceState, RSSSource } from "../../scripts/models/source"
+import { SourceState, RssSource } from "../../scripts/models/source"
 import {
   IColumn,
   Selection,
@@ -39,7 +39,7 @@ type GroupsTabProps = {
 type GroupsTabState = {
   [formName: string]: any
   selectedGroup: SourceGroup
-  selectedSources: RSSSource[]
+  selectedSources: RssSource[]
   dropdownIndex: number
   manageGroup: boolean
 }
@@ -51,7 +51,7 @@ class GroupsTab extends React.Component<GroupsTabProps, GroupsTabState> {
   groupDraggedIndex = -1
   sourcesSelection: Selection
   sourcesDragDropEvents: IDragDropEvents
-  sourcesDraggedItem: RSSSource
+  sourcesDraggedItem: RssSource
   sourcesDraggedIndex = -1
 
   constructor(props) {
@@ -79,10 +79,10 @@ class GroupsTab extends React.Component<GroupsTabProps, GroupsTabState> {
       },
     })
     this.sourcesSelection = new Selection({
-      getKey: s => (s as RSSSource).sid,
+      getKey: s => (s as RssSource).sid,
       onSelectionChanged: () => {
         let sources = this.sourcesSelection.getSelectedCount()
-          ? (this.sourcesSelection.getSelection() as RSSSource[])
+          ? (this.sourcesSelection.getSelection() as RssSource[])
           : null
         this.setState({
           selectedSources: sources,
@@ -133,7 +133,7 @@ class GroupsTab extends React.Component<GroupsTabProps, GroupsTabState> {
       iconName: "ImagePixel",
       minWidth: 16,
       maxWidth: 16,
-      onRender: (s: RSSSource) =>
+      onRender: (s: RssSource) =>
         s.iconurl && <img src={s.iconurl} className="favicon" />,
     },
     {
@@ -189,12 +189,12 @@ class GroupsTab extends React.Component<GroupsTabProps, GroupsTabState> {
   getSourcesDragDropEvents = (): IDragDropEvents => ({
     canDrop: () => true,
     canDrag: () => true,
-    onDrop: (item?: RSSSource) => {
+    onDrop: (item?: RssSource) => {
       if (this.sourcesDraggedItem) {
         this.reorderSources(item)
       }
     },
-    onDragStart: (item?: RSSSource, itemIndex?: number) => {
+    onDragStart: (item?: RssSource, itemIndex?: number) => {
       this.sourcesDraggedItem = item
       this.sourcesDraggedIndex = itemIndex!
     },
@@ -204,11 +204,11 @@ class GroupsTab extends React.Component<GroupsTabProps, GroupsTabState> {
     },
   })
 
-  reorderSources = (item: RSSSource) => {
+  reorderSources = (item: RssSource) => {
     let draggedItems = this.sourcesSelection.isIndexSelected(
       this.sourcesDraggedIndex
     )
-      ? (this.sourcesSelection.getSelection() as RSSSource[]).map(s => s.sid)
+      ? (this.sourcesSelection.getSelection() as RssSource[]).map(s => s.sid)
       : [this.sourcesDraggedItem!.sid]
 
     let insertIndex = this.state.selectedGroup.sids.indexOf(item.sid)

@@ -5,7 +5,7 @@ import { RootState } from "../../scripts/reducer"
 import SourcesTab from "../../components/settings/sources"
 import {
   addSource,
-  RSSSource,
+  RssSource,
   updateSource,
   deleteSource,
   SourceOpenTarget,
@@ -34,11 +34,11 @@ const mapStateToProps = createSelector(
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
     acknowledgeSIDs: () => dispatch(toggleSettings(true)),
-    addSource: (url: string) => dispatch(addSource(url)),
-    updateSourceName: (source: RSSSource, name: string) => {
-      dispatch(updateSource({ ...source, name: name } as RSSSource))
+    addSource: (url: string) => dispatch(addSource({ url })),
+    updateSourceName: (source: RssSource, name: string) => {
+      dispatch(updateSource({ ...source, name: name } as RssSource))
     },
-    updateSourceIcon: async (source: RSSSource, iconUrl: string) => {
+    updateSourceIcon: async (source: RssSource, iconUrl: string) => {
       dispatch(saveSettings())
       if (await validateFavicon(iconUrl)) {
         dispatch(updateSource({ ...source, iconurl: iconUrl }))
@@ -47,22 +47,22 @@ const mapDispatchToProps = (dispatch: AppDispatch) => {
       }
       dispatch(saveSettings())
     },
-    updateSourceOpenTarget: (source: RSSSource, target: SourceOpenTarget) => {
-      dispatch(updateSource({ ...source, openTarget: target } as RSSSource))
+    updateSourceOpenTarget: (source: RssSource, target: SourceOpenTarget) => {
+      dispatch(updateSource({ ...source, openTarget: target } as RssSource))
     },
-    updateFetchFrequency: (source: RSSSource, frequency: number) => {
+    updateFetchFrequency: (source: RssSource, frequency: number) => {
       dispatch(
         updateSource({
           ...source,
           fetchFrequency: frequency,
-        } as RSSSource)
+        } as RssSource)
       )
     },
-    deleteSource: (source: RSSSource) => dispatch(deleteSource(source)),
-    deleteSources: (sources: RSSSource[]) => dispatch(deleteSources(sources)),
+    deleteSource: (source: RssSource) => dispatch(deleteSource(source)),
+    deleteSources: (sources: RssSource[]) => dispatch(deleteSources(sources)),
     importOPML: () => dispatch(importOPML()),
     exportOPML: () => dispatch(exportOPML()),
-    toggleSourceHidden: (source: RSSSource) =>
+    toggleSourceHidden: (source: RssSource) =>
       dispatch(toggleSourceHidden(source)),
   }
 }

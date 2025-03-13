@@ -13,7 +13,7 @@ import {
   Link,
 } from "@fluentui/react"
 import {
-  RSSSource,
+  RssSource,
   SourceOpenTarget,
   SourceTextDirection,
 } from "../scripts/models/source"
@@ -24,7 +24,7 @@ const FONT_SIZE_OPTIONS = [12, 13, 14, 15, 16, 17, 18, 19, 20]
 
 type ArticleProps = {
   item: RSSItem
-  source: RSSSource
+  source: RssSource
   locale: string
   shortcuts: (item: RSSItem, e: KeyboardEvent) => void
   dismiss: () => void
@@ -36,7 +36,7 @@ type ArticleProps = {
   imageMenu: (position: [number, number]) => void
   dismissContextMenu: () => void
   updateSourceTextDirection: (
-    source: RSSSource,
+    source: RssSource,
     direction: SourceTextDirection
   ) => void
 }

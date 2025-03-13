@@ -3,7 +3,7 @@ import { createSelector } from "reselect"
 import { RootState } from "../../scripts/reducer"
 import RulesTab from "../../components/settings/rules"
 import { AppDispatch } from "../../scripts/utils"
-import { RSSSource, updateSource } from "../../scripts/models/source"
+import { RssSource, updateSource } from "../../scripts/models/source"
 import { SourceRule } from "../../scripts/models/rule"
 
 const getSources = (state: RootState) => state.sources
@@ -13,7 +13,7 @@ const mapStateToProps = createSelector([getSources], sources => ({
 }))
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
-  updateSourceRules: (source: RSSSource, rules: SourceRule[]) => {
+  updateSourceRules: (source: RssSource, rules: SourceRule[]) => {
     source.rules = rules
     dispatch(updateSource(source))
   },

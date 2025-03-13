@@ -3,7 +3,7 @@ import intl from "react-intl-universal"
 import { Icon } from "@fluentui/react/lib/Icon"
 import { Nav, INavLink, INavLinkGroup } from "office-ui-fabric-react/lib/Nav"
 import { SourceGroup } from "../schema-types"
-import { SourceState, RSSSource } from "../scripts/models/source"
+import { SourceState, RssSource } from "../scripts/models/source"
 import { ALL } from "../scripts/models/feed"
 import { AnimationClassNames, Stack, FocusZone } from "@fluentui/react"
 
@@ -18,7 +18,7 @@ type MenuProps = {
   toggleMenu: () => void
   allArticles: (init?: boolean) => void
   selectSourceGroup: (group: SourceGroup, menuKey: string) => void
-  selectSource: (source: RSSSource) => void
+  selectSource: (source: RssSource) => void
   groupContextMenu: (sids: number[], event: React.MouseEvent) => void
   updateGroupExpansion: (
     event: React.MouseEvent<HTMLElement>,
@@ -89,7 +89,7 @@ export class Menu extends React.Component<MenuProps> {
     ]
   }
 
-  getSource = (s: RSSSource): INavLink => ({
+  getSource = (s: RssSource): INavLink => ({
     name: s.name,
     ariaLabel: s.name + this.countOverflow(s.unreadCount),
     key: "s-" + s.sid,

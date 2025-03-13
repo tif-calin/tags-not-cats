@@ -1,10 +1,10 @@
 import * as React from "react"
 import Time from "../utils/time"
-import { RSSSource } from "../../scripts/models/source"
+import { RssSource } from "../../scripts/models/source"
 import { RSSItem } from "../../scripts/models/item"
 
 type CardInfoProps = {
-  source: RSSSource
+  source: RssSource
   item: RSSItem
   hideTime?: boolean
   showCreator?: boolean

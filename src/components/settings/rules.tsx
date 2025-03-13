@@ -1,6 +1,6 @@
 import * as React from "react"
 import intl from "react-intl-universal"
-import { SourceState, RSSSource } from "../../scripts/models/source"
+import { SourceState, RssSource } from "../../scripts/models/source"
 import {
   Stack,
   Label,
@@ -40,7 +40,7 @@ const actionKeyMap = {
 
 type RulesTabProps = {
   sources: SourceState
-  updateSourceRules: (source: RSSSource, rules: SourceRule[]) => void
+  updateSourceRules: (source: RssSource, rules: SourceRule[]) => void
 }
 
 type RulesTabState = {

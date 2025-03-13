@@ -34,7 +34,7 @@ export const enum SourceTextDirection {
   Vertical,
 }
 
-export class RSSSource {
+export class RssSource {
   sid: number
   url: string
   iconurl?: string
@@ -68,7 +68,7 @@ export class RSSSource {
   }
 
   private static async checkItem(
-    source: RSSSource,
+    source: RssSource,
     item: MyParserItem
   ): Promise<RSSItem> {
     let i = new RSSItem(item, source)
@@ -94,7 +94,7 @@ export class RSSSource {
   }
 
   static checkItems(
-    source: RSSSource,
+    source: RssSource,
     items: MyParserItem[]
   ): Promise<RSSItem[]> {
     return new Promise<RSSItem[]>((resolve, reject) => {
@@ -112,14 +112,14 @@ export class RSSSource {
     })
   }
 
-  static async fetchItems(source: RSSSource) {
+  static async fetchItems(source: RssSource) {
     let feed = await parseRSS(source.url)
     return await this.checkItems(source, feed.items)
   }
 }
 
 export type SourceState = {
-  [sid: number]: RSSSource
+  [sid: number]: RssSource
 }
 
 export const INIT_SOURCES = "INIT_SOURCES"
@@ -141,13 +141,13 @@ interface AddSourceAction {
   type: typeof ADD_SOURCE
   status: ActionStatus
   batch: boolean
-  source?: RSSSource
+  source?: RssSource
   err?
 }
 
 interface UpdateSourceAction {
   type: typeof UPDATE_SOURCE
-  source: RSSSource
+  source: RssSource
 }
 
 interface UpdateUnreadCountsAction {
@@ -157,13 +157,13 @@ interface UpdateUnreadCountsAction {
 
 interface DeleteSourceAction {
   type: typeof DELETE_SOURCE
-  source: RSSSource
+  source: RssSource
 }
 
 interface ToggleSourceHiddenAction {
   type: typeof HIDE_SOURCE | typeof UNHIDE_SOURCE
   status: ActionStatus
-  source: RSSSource
+  source: RssSource
 }
 
 export type SourceActionTypes =
@@ -233,7 +233,7 @@ export function initSources(): AppThunk<Promise<void>> {
     const sources = (await db.sourcesDB
       .select()
       .from(db.sources)
-      .exec()) as RSSSource[]
+      .exec()) as RssSource[]
     const state: SourceState = {}
     for (let source of sources) {
       source.unreadCount = 0
@@ -254,7 +254,7 @@ export function addSourceRequest(batch: boolean): SourceActionTypes {
 }
 
 export function addSourceSuccess(
-  source: RSSSource,
+  source: RssSource,
   batch: boolean
 ): SourceActionTypes {
   return {
@@ -275,7 +275,7 @@ export function addSourceFailure(err, batch: boolean): SourceActionTypes {
 }
 
 let insertPromises = Promise.resolve()
-export function insertSource(source: RSSSource): AppThunk<Promise<RSSSource>> {
+export function insertSource(source: RssSource): AppThunk<Promise<RssSource>> {
   return (_, getState) => {
     return new Promise((resolve, reject) => {
       insertPromises = insertPromises.then(async () => {
@@ -287,7 +287,7 @@ export function insertSource(source: RSSSource): AppThunk<Promise<RSSSource>> {
             .insert()
             .into(db.sources)
             .values([row])
-            .exec()) as RSSSource[]
+            .exec()) as RssSource[]
           resolve(inserted[0])
         } catch (err) {
           if (err.code === 201) reject(intl.get("sources.exist"))
@@ -334,14 +334,14 @@ export function addSource(
   }
 }
 
-export function updateSourceDone(source: RSSSource): SourceActionTypes {
+export function updateSourceDone(source: RssSource): SourceActionTypes {
   return {
     type: UPDATE_SOURCE,
     source: source,
   }
 }
 
-export function updateSource(source: RSSSource): AppThunk<Promise<void>> {
+export function updateSource(source: RssSource): AppThunk<Promise<void>> {
   return async dispatch => {
     let sourceCopy = { ...source }
     delete sourceCopy.unreadCount
@@ -351,7 +351,7 @@ export function updateSource(source: RSSSource): AppThunk<Promise<void>> {
   }
 }
 
-export function deleteSourceDone(source: RSSSource): SourceActionTypes {
+export function deleteSourceDone(source: RssSource): SourceActionTypes {
   return {
     type: DELETE_SOURCE,
     source: source,
@@ -359,7 +359,7 @@ export function deleteSourceDone(source: RSSSource): SourceActionTypes {
 }
 
 export function deleteSource(
-  source: RSSSource,
+  source: RssSource,
   batch = false
 ): AppThunk<Promise<void>> {
   return async (dispatch, getState) => {
@@ -385,7 +385,7 @@ export function deleteSource(
   }
 }
 
-export function deleteSources(sources: RSSSource[]): AppThunk<Promise<void>> {
+export function deleteSources(sources: RssSource[]): AppThunk<Promise<void>> {
   return async dispatch => {
     dispatch(saveSettings())
     for (let source of sources) {
@@ -395,9 +395,9 @@ export function deleteSources(sources: RSSSource[]): AppThunk<Promise<void>> {
   }
 }
 
-export function toggleSourceHidden(source: RSSSource): AppThunk<Promise<void>> {
+export function toggleSourceHidden(source: RssSource): AppThunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const sourceCopy: RSSSource = { ...getState().sources[source.sid] }
+    const sourceCopy: RssSource = { ...getState().sources[source.sid] }
     sourceCopy.hidden = !sourceCopy.hidden
     dispatch({
       type: sourceCopy.hidden ? HIDE_SOURCE : UNHIDE_SOURCE,
@@ -490,7 +490,7 @@ export function sourceReducer(
               nextState[sid] = {
                 ...source,
                 unreadCount: source.unreadCount + updateMap.get(sid),
-              } as RSSSource
+              } as RssSource
             } else {
               nextState[sid] = source
             }
@@ -510,7 +510,7 @@ export function sourceReducer(
           unreadCount:
             state[action.item.source].unreadCount +
             (action.type === MARK_UNREAD ? 1 : -1),
-        } as RSSSource,
+        } as RssSource,
       }
     case MARK_ALL_READ: {
       let nextState = { ...state }

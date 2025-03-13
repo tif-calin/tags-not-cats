@@ -2,7 +2,7 @@ import intl from "react-intl-universal"
 import { ServiceHooks } from "../service"
 import { ServiceConfigs, SyncService } from "../../../schema-types"
 import { createSourceGroup } from "../group"
-import { RSSSource } from "../source"
+import { RssSource } from "../source"
 import { htmlDecode, domParser } from "../../utils"
 import { RSSItem } from "../item"
 import { SourceRule } from "../rule"
@@ -72,7 +72,7 @@ export const feverServiceHooks: ServiceHooks = {
       }
     }
     const sources = feeds.map(f => {
-      const source = new RSSSource({ url: f.url, name: f.title })
+      const source = new RssSource({ url: f.url, name: f.title })
       source.serviceRef = String(f.id)
       return source
     })
@@ -104,7 +104,7 @@ export const feverServiceHooks: ServiceHooks = {
     )
     configs.lastId = items.reduce((m, n) => Math.max(m, n.id), configs.lastId)
     if (items.length > 0) {
-      const fidMap = new Map<string, RSSSource>()
+      const fidMap = new Map<string, RssSource>()
       for (let source of Object.values(state.sources)) {
         if (source.serviceRef) {
           fidMap.set(source.serviceRef, source)

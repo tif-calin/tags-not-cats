@@ -12,7 +12,7 @@ import {
 } from "../scripts/models/page"
 import { ViewType } from "../schema-types"
 import { initFeeds } from "../scripts/models/feed"
-import { RSSSource } from "../scripts/models/source"
+import { RssSource } from "../scripts/models/source"
 
 const getApp = (state: RootState) => state.app
 const getSources = (state: RootState) => state.sources
@@ -43,7 +43,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(selectSources(group.sids, menuKey, group.name))
     dispatch(initFeeds())
   },
-  selectSource: (source: RSSSource) => {
+  selectSource: (source: RssSource) => {
     dispatch(selectSources([source.sid], "s-" + source.sid, source.name))
     dispatch(initFeeds())
   },

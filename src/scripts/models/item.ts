@@ -9,7 +9,7 @@ import {
   AppThunk,
   platformCtrl,
 } from "../utils"
-import { RSSSource, updateSource, updateUnreadCounts } from "./source"
+import { RssSource, updateSource, updateUnreadCounts } from "./source"
 import { FeedActionTypes, INIT_FEED, LOAD_MORE, dismissItems } from "./feed"
 import {
   pushNotification,
@@ -41,7 +41,7 @@ export class RSSItem {
   notify: boolean
   serviceRef?: string
 
-  constructor(item: MyParserItem, source: RSSSource) {
+  constructor(item: MyParserItem, source: RssSource) {
     for (let field of ["title", "link", "creator"]) {
       const content = item[field]
       if (content && typeof content !== "string") delete item[field]
@@ -117,7 +117,7 @@ interface FetchItemsAction {
   fetchCount?: number
   items?: RSSItem[]
   itemState?: ItemState
-  errSource?: RSSSource
+  errSource?: RssSource
   err?
 }
 
@@ -176,7 +176,7 @@ export function fetchItemsSuccess(
   }
 }
 
-export function fetchItemsFailure(source: RSSSource, err): ItemActionTypes {
+export function fetchItemsFailure(source: RssSource, err): ItemActionTypes {
   return {
     type: FETCH_ITEMS,
     status: ActionStatus.Failure,
@@ -231,7 +231,7 @@ export function fetchItems(
             })
           : sids.map(sid => sourcesState[sid]).filter(s => !s.serviceRef)
       for (let source of sources) {
-        let promise = RSSSource.fetchItems(source)
+        let promise = RssSource.fetchItems(source)
         promise.then(() =>
           dispatch(updateSource({ ...source, lastFetched: new Date() }))
         )

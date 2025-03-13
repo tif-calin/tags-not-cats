@@ -18,7 +18,7 @@ import {
   openImageMenu,
 } from "../scripts/models/app"
 import {
-  RSSSource,
+  RssSource,
   SourceTextDirection,
   updateSource,
 } from "../scripts/models/source"
@@ -64,10 +64,10 @@ const mapDispatchToProps = (dispatch: AppDispatch) => {
       dispatch(openImageMenu(position)),
     dismissContextMenu: () => dispatch(closeContextMenu()),
     updateSourceTextDirection: (
-      source: RSSSource,
+      source: RssSource,
       direction: SourceTextDirection
     ) => {
-      dispatch(updateSource({ ...source, textDir: direction } as RSSSource))
+      dispatch(updateSource({ ...source, textDir: direction } as RssSource))
     },
   }
 }

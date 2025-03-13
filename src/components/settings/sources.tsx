@@ -20,7 +20,7 @@ import {
 } from "@fluentui/react"
 import {
   SourceState,
-  RSSSource,
+  RssSource,
   SourceOpenTarget,
 } from "../../scripts/models/source"
 import { urlTest } from "../../scripts/utils"
@@ -32,22 +32,22 @@ type SourcesTabProps = {
   sids: number[]
   acknowledgeSIDs: () => void
   addSource: (url: string) => void
-  updateSourceName: (source: RSSSource, name: string) => void
-  updateSourceIcon: (source: RSSSource, iconUrl: string) => Promise<void>
-  updateSourceOpenTarget: (source: RSSSource, target: SourceOpenTarget) => void
-  updateFetchFrequency: (source: RSSSource, frequency: number) => void
-  deleteSource: (source: RSSSource) => void
-  deleteSources: (sources: RSSSource[]) => void
+  updateSourceName: (source: RssSource, name: string) => void
+  updateSourceIcon: (source: RssSource, iconUrl: string) => Promise<void>
+  updateSourceOpenTarget: (source: RssSource, target: SourceOpenTarget) => void
+  updateFetchFrequency: (source: RssSource, frequency: number) => void
+  deleteSource: (source: RssSource) => void
+  deleteSources: (sources: RssSource[]) => void
   importOPML: () => void
   exportOPML: () => void
-  toggleSourceHidden: (source: RSSSource) => void
+  toggleSourceHidden: (source: RssSource) => void
 }
 
 type SourcesTabState = {
   [formName: string]: string
 } & {
-  selectedSource: RSSSource
-  selectedSources: RSSSource[]
+  selectedSource: RssSource
+  selectedSources: RssSource[]
 }
 
 const enum EditDropdownKeys {
@@ -68,11 +68,11 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
       selectedSources: null,
     }
     this.selection = new Selection({
-      getKey: s => (s as RSSSource).sid,
+      getKey: s => (s as RssSource).sid,
       onSelectionChanged: () => {
         let count = this.selection.getSelectedCount()
         let sources = count
-          ? (this.selection.getSelection() as RSSSource[])
+          ? (this.selection.getSelection() as RssSource[])
           : null
         this.setState({
           selectedSource: count === 1 ? sources[0] : null,
@@ -104,7 +104,7 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
       maxWidth: 16,
       minWidth: 16,
       name: intl.get("icon"),
-      onRender: (s: RSSSource) =>
+      onRender: (s: RssSource) =>
         s.iconurl && <img src={s.iconurl} className="favicon" />,
     },
     {
@@ -155,7 +155,7 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
       selectedSource: {
         ...this.state.selectedSource,
         fetchFrequency: frequency,
-      } as RSSSource,
+      } as RssSource,
     })
   }
 
@@ -185,7 +185,7 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
       selectedSource: {
         ...this.state.selectedSource,
         name: newName,
-      } as RSSSource,
+      } as RssSource,
     })
   }
 
@@ -215,7 +215,7 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
       selectedSource: {
         ...this.state.selectedSource,
         openTarget: newTarget,
-      } as RSSSource,
+      } as RssSource,
     })
   }
 
@@ -225,7 +225,7 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
       selectedSource: {
         ...this.state.selectedSource,
         hidden: !this.state.selectedSource.hidden,
-      } as RSSSource,
+      } as RssSource,
     })
   }
 

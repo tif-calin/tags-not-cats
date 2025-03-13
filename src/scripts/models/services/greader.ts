@@ -4,7 +4,7 @@ import lf from "lovefield"
 import { ServiceHooks } from "../service"
 import { ServiceConfigs, SyncService } from "../../../schema-types"
 import { createSourceGroup } from "../group"
-import { RSSSource } from "../source"
+import { RssSource } from "../source"
 import { RSSItem } from "../item"
 import { domParser, htmlDecode } from "../../utils"
 import { SourceRule } from "../rule"
@@ -150,9 +150,9 @@ export const gReaderServiceHooks: ServiceHooks = {
         }
       }
     }
-    const sources = new Array<RSSSource>()
+    const sources = new Array<RssSource>()
     subscriptions.forEach(s => {
-      const source = new RSSSource({ url: s.url || s.htmlUrl, name: s.title })
+      const source = new RssSource({ url: s.url || s.htmlUrl, name: s.title })
       source.serviceRef = s.id
       // Omit duplicate sources in The Old Reader
       if (configs.useInt64 || s.url != "http://blog.theoldreader.com/rss") {
@@ -219,7 +219,7 @@ export const gReaderServiceHooks: ServiceHooks = {
     } while (continuation && items.length < configs.fetchLimit)
     if (items.length > 0) {
       configs.lastId = items[0].id
-      const fidMap = new Map<string, RSSSource>()
+      const fidMap = new Map<string, RssSource>()
       for (let source of Object.values(state.sources)) {
         if (source.serviceRef) {
           fidMap.set(source.serviceRef, source)

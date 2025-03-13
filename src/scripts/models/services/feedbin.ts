@@ -4,7 +4,7 @@ import lf from "lovefield"
 import { ServiceHooks } from "../service"
 import { ServiceConfigs, SyncService } from "../../../schema-types"
 import { createSourceGroup } from "../group"
-import { RSSSource } from "../source"
+import { RssSource } from "../source"
 import { domParser } from "../../utils"
 import { RSSItem } from "../item"
 import { SourceRule } from "../rule"
@@ -92,7 +92,7 @@ export const feedbinServiceHooks: ServiceHooks = {
       }
     }
     const sources = subscriptions.map(s => {
-      const source = new RSSSource({ url: s.feed_url, name: s.title })
+      const source = new RssSource({ url: s.feed_url, name: s.title })
       source.serviceRef = String(s.feed_id)
       return source
     })
@@ -147,7 +147,7 @@ export const feedbinServiceHooks: ServiceHooks = {
     )
     configs.lastId = items.reduce((m, n) => Math.max(m, n.id), configs.lastId)
     if (items.length > 0) {
-      const fidMap = new Map<string, RSSSource>()
+      const fidMap = new Map<string, RssSource>()
       for (let source of Object.values(state.sources)) {
         if (source.serviceRef) {
           fidMap.set(source.serviceRef, source)

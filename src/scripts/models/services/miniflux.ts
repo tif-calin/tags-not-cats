@@ -4,7 +4,7 @@ import lf from "lovefield"
 import { ServiceHooks } from "../service"
 import { ServiceConfigs, SyncService } from "../../../schema-types"
 import { createSourceGroup } from "../group"
-import { RSSSource } from "../source"
+import { RssSource } from "../source"
 import { domParser, htmlDecode } from "../../utils"
 import { RSSItem } from "../item"
 import { SourceRule } from "../rule"
@@ -111,10 +111,10 @@ export const minifluxServiceHooks: ServiceHooks = {
     if (feeds === undefined) throw APIError()
 
     // go through feeds, create typed source while also mapping by group
-    let sources: RSSSource[] = new Array<RSSSource>()
+    let sources: RssSource[] = new Array<RssSource>()
     let groupsMap: Map<string, string> = new Map<string, string>()
     for (let feed of feeds) {
-      let source = new RSSSource({ url: feed.feed_url, name: feed.title })
+      let source = new RssSource({ url: feed.feed_url, name: feed.title })
       // associate service christened id to match in other request
       source.serviceRef = feed.id.toString()
       sources.push(source)
@@ -171,7 +171,7 @@ export const minifluxServiceHooks: ServiceHooks = {
     configs.lastId = items[0].id
 
     // get sources that possess ref/id given by service, associate new items
-    const sourceMap = new Map<string, RSSSource>()
+    const sourceMap = new Map<string, RssSource>()
     for (let source of Object.values(state.sources)) {
       if (source.serviceRef) {
         sourceMap.set(source.serviceRef, source)
