@@ -191,8 +191,11 @@
 }
 .cards-feed-container .ms-List-page {
   display: flex;
-  justify-content: space-around;
   flex-wrap: wrap;
+  gap: 40px;
+  justify-content: space-around;
+  padding: 32px;
+  padding-bottom: 0;
 }
 .cards-feed-container > div.load-more-wrapper,
 .flex-fix {
