@@ -206,7 +206,7 @@
   margin: 16px 0;
 }
 .flex-fix {
-  min-width: 280px;
+  min-width: 256px;
 }
 .cards-feed-container > .empty,
 .list-feed > .empty,
