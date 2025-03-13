@@ -235,26 +235,26 @@ export function importOPML(): AppThunk {
     window.utils.showOpenDialog(filters).then(data => {
       if (!data) return
 
-        dispatch(saveSettings())
+      dispatch(saveSettings())
       const doc = domParser
-          .parseFromString(data, "text/xml")
-          .getElementsByTagName("body")
-        if (doc.length == 0) {
-          dispatch(saveSettings())
-          return
-        }
+        .parseFromString(data, "text/xml")
+        .getElementsByTagName("body")
+      if (doc.length == 0) {
+        dispatch(saveSettings())
+        return
+      }
       const parseError = doc[0].getElementsByTagName("parsererror")
-        if (parseError.length > 0) {
-          dispatch(saveSettings())
-          window.utils.showErrorBox(
-            intl.get("sources.errorParse"),
-            intl.get("sources.errorParseHint")
-          )
-          return
-        }
+      if (parseError.length > 0) {
+        dispatch(saveSettings())
+        window.utils.showErrorBox(
+          intl.get("sources.errorParse"),
+          intl.get("sources.errorParseHint")
+        )
+        return
+      }
       const sources: [ReturnType<typeof addSource>, number, string][] = []
       const errors: [string, any][] = []
-        for (let el of doc[0].children) {
+      for (let el of doc[0].children) {
         const type = el.getAttribute("type")
 
         switch (type) {
@@ -272,44 +272,53 @@ export function importOPML(): AppThunk {
               if (source) sources.push([source[0], gid, source[1]])
             }
             break
-          }
         }
-        dispatch(fetchItemsRequest(sources.length))
-        let promises = sources.map(([s, gid, url]) => {
-          return dispatch(s)
-            .then(sid => {
-              if (sid !== null && gid > -1) dispatch(addSourceToGroup(gid, sid))
-            })
+      }
+      dispatch(fetchItemsRequest(sources.length))
+      let promises = sources.map(([s, gid, url]) => {
+        return dispatch(s)
+          .then(sid => {
+            if (sid !== null && gid > -1) dispatch(addSourceToGroup(gid, sid))
+          })
           .catch(err => errors.push([url, err]))
           .finally(() => dispatch(fetchItemsIntermediate()))
-        })
-        Promise.allSettled(promises).then(() => {
-          dispatch(fetchItemsSuccess([], {}))
-          dispatch(saveSettings())
-          if (errors.length > 0) {
-            window.utils.showErrorBox(
-              intl.get("sources.errorImport", {
-                count: errors.length,
-              }),
-              errors
-                .map(e => {
-                  return e[0] + "\n" + String(e[1])
-                })
-                .join("\n"),
-              intl.get("context.copy")
-            )
-          }
-        })
+      })
+      Promise.allSettled(promises).then(() => {
+        dispatch(fetchItemsSuccess([], {}))
+        dispatch(saveSettings())
+        if (errors.length > 0) {
+          window.utils.showErrorBox(
+            intl.get("sources.errorImport", {
+              count: errors.length,
+            }),
+            errors
+              .map(e => {
+                return e[0] + "\n" + String(e[1])
+              })
+              .join("\n"),
+            intl.get("context.copy")
+          )
+        }
+      })
     })
   }
 }
 
-function sourceToOutline(source: RSSSource, xml: Document) {
-  let outline = xml.createElement("outline")
+let feedExportCache: Record<RssSource['sid'], HTMLElement> = {};
+function sourceToOutline(source: RssSource, xml: Document, tagName?: string) {
+  feedExportCache[source.sid] ||= xml.createElement("outline")
+  const outline = feedExportCache[source.sid]
+
   outline.setAttribute("text", source.name)
   outline.setAttribute("title", source.name)
   outline.setAttribute("type", "rss")
   outline.setAttribute("xmlUrl", source.url)
+  if (tagName) {
+    const existingTags = outline.getAttribute("category") || ""
+    outline.setAttribute("category", [existingTags, tagName].filter(Boolean).join(","))
+  }
+  if (source.iconurl) outline.setAttribute("tncr:iconurl", source.iconurl)
+
   return outline
 }
 
@@ -318,37 +327,46 @@ export function exportOPML(): AppThunk {
     const filters = [
       { name: intl.get("sources.opmlFile"), extensions: ["opml"] },
     ]
+
+    const todaysDate = new Date().toISOString().split('T')[0]
+    const todaysDateShort = todaysDate.substring(2).replace(/-/g, '')
+
     window.utils
-      .showSaveDialog(filters, "*/Fluent_Reader_Export.opml")
+      .showSaveDialog(filters, `*/tncr${todaysDateShort}.opml`)
       .then(write => {
-        if (write) {
-          let state = getState()
-          let xml = domParser.parseFromString(
-            '<?xml version="1.0" encoding="UTF-8"?><opml version="1.0"><head><title>Fluent Reader Export</title></head><body></body></opml>',
-            "text/xml"
-          )
-          let body = xml.getElementsByTagName("body")[0]
-          for (let group of state.groups) {
-            if (group.isMultiple) {
-              let outline = xml.createElement("outline")
-              outline.setAttribute("text", group.name)
-              outline.setAttribute("title", group.name)
-              for (let sid of group.sids) {
-                outline.appendChild(sourceToOutline(state.sources[sid], xml))
-              }
-              body.appendChild(outline)
-            } else {
-              body.appendChild(
-                sourceToOutline(state.sources[group.sids[0]], xml)
-              )
+        if (!write) return
+
+        const state = getState()
+        const xml = domParser.parseFromString(
+          `<?xml version="1.0" encoding="UTF-8"?><opml version="2.0"><head><title>Tags Not Cats RSS Export</title><dateCreated>${todaysDate}</dateCreated></head><body></body></opml>`,
+          "text/xml"
+        )
+        const opml = xml.getElementsByTagName("opml")[0]
+        opml.setAttribute("xmlns:tncr", "urn:tags-not-cats-rss:")
+        const body = xml.getElementsByTagName("body")[0]
+        feedExportCache = {}
+        for (let group of state.groups) {
+          if (group.isMultiple) {
+            let outline = xml.createElement("outline")
+            outline.setAttribute("text", group.name)
+            outline.setAttribute("title", group.name)
+            outline.setAttribute("type", "bucket")
+            body.appendChild(outline)
+
+            for (let sid of group.sids) {
+              body.appendChild(sourceToOutline(state.sources[sid], xml, group.name))
             }
+          } else {
+            body.appendChild(
+              sourceToOutline(state.sources[group.sids[0]], xml)
+            )
           }
-          let serializer = new XMLSerializer()
-          write(
-            serializer.serializeToString(xml),
-            intl.get("settings.writeError")
-          )
         }
+        feedExportCache = {}
+        write(
+          new XMLSerializer().serializeToString(xml),
+          intl.get("settings.writeError")
+        )
       })
   }
 }
