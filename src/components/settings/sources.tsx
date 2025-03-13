@@ -201,7 +201,7 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
 
   addSource = (event: React.FormEvent) => {
     event.preventDefault()
-    let trimmed = this.state.newUrl.trim()
+    let trimmed = this.state.newUrl.trim().replace(/\/$/, '')
     if (urlTest(trimmed)) this.props.addSource(trimmed)
   }
 
