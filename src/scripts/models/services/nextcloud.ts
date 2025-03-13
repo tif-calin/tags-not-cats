@@ -94,7 +94,7 @@ export const nextcloudServiceHooks: ServiceHooks = {
       }
     }
     const sources = feeds.feeds.map(s => {
-      const source = new RSSSource(s.url, s.title)
+      const source = new RSSSource({ url: s.url, name: s.title })
       source.iconurl = s.faviconLink
       source.serviceRef = String(s.id)
       if (s.folderId && groupsByTagId.has(String(s.folderId))) {

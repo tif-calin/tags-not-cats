@@ -7,7 +7,7 @@ import { SourceState, RSSSource } from "../scripts/models/source"
 import { ALL } from "../scripts/models/feed"
 import { AnimationClassNames, Stack, FocusZone } from "@fluentui/react"
 
-export type MenuProps = {
+type MenuProps = {
   status: boolean
   display: boolean
   selected: string

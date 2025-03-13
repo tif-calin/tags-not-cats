@@ -9,6 +9,10 @@ dist/*.js
 dist/*.js.map
 dist/*.LICENSE.txt
 
+# temporary files
+temp/*
+!.keep
+
 # Node
 node_modules
 *.lock

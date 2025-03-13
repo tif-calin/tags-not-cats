@@ -79,7 +79,7 @@ export async function parseRSS(url: string) {
   } catch {
     throw new Error(intl.get("log.networkError"))
   }
-  if (result && result.ok) {
+  if (result?.ok) {
     try {
       return await rssParser.parseString(await decodeFetchResponse(result))
     } catch {

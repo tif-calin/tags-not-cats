@@ -152,7 +152,7 @@ export const gReaderServiceHooks: ServiceHooks = {
     }
     const sources = new Array<RSSSource>()
     subscriptions.forEach(s => {
-      const source = new RSSSource(s.url || s.htmlUrl, s.title)
+      const source = new RSSSource({ url: s.url || s.htmlUrl, name: s.title })
       source.serviceRef = s.id
       // Omit duplicate sources in The Old Reader
       if (configs.useInt64 || s.url != "http://blog.theoldreader.com/rss") {

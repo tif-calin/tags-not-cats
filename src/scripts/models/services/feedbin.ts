@@ -92,7 +92,7 @@ export const feedbinServiceHooks: ServiceHooks = {
       }
     }
     const sources = subscriptions.map(s => {
-      const source = new RSSSource(s.feed_url, s.title)
+      const source = new RSSSource({ url: s.feed_url, name: s.title })
       source.serviceRef = String(s.feed_id)
       return source
     })

@@ -72,7 +72,7 @@ export const feverServiceHooks: ServiceHooks = {
       }
     }
     const sources = feeds.map(f => {
-      const source = new RSSSource(f.url, f.title)
+      const source = new RSSSource({ url: f.url, name: f.title })
       source.serviceRef = String(f.id)
       return source
     })

@@ -114,7 +114,7 @@ export const minifluxServiceHooks: ServiceHooks = {
     let sources: RSSSource[] = new Array<RSSSource>()
     let groupsMap: Map<string, string> = new Map<string, string>()
     for (let feed of feeds) {
-      let source = new RSSSource(feed.feed_url, feed.title)
+      let source = new RSSSource({ url: feed.feed_url, name: feed.title })
       // associate service christened id to match in other request
       source.serviceRef = feed.id.toString()
       sources.push(source)

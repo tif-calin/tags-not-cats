@@ -48,7 +48,7 @@ export class RSSSource {
   textDir: SourceTextDirection
   hidden: boolean
 
-  constructor(url: string, name: string = null) {
+  constructor({ url, name = null }: { url: string; name: string | null; }) {
     this.url = url
     this.name = name
     this.openTarget = SourceOpenTarget.Local
@@ -307,7 +307,7 @@ export function addSource(
     const app = getState().app
     if (app.sourceInit) {
       dispatch(addSourceRequest(batch))
-      const source = new RSSSource(url, name)
+    const source = new RSSSource({ url, name })
       try {
         const feed = await RSSSource.fetchMetaData(source)
         const inserted = await dispatch(insertSource(source))
