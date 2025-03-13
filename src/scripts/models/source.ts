@@ -35,30 +35,32 @@ export const enum SourceTextDirection {
 }
 
 export class RssSource {
-  sid: number
-  url: string
+  /** in minutes */
+  fetchFrequency: number
+  hidden: boolean
   iconurl?: string
+  lastFetched: Date
   name: string
   openTarget: SourceOpenTarget
-  unreadCount: number
-  lastFetched: Date
-  serviceRef?: string
-  fetchFrequency: number // in minutes
   rules?: SourceRule[]
+  serviceRef?: string
+  sid: number
   textDir: SourceTextDirection
-  hidden: boolean
+  unreadCount: number
+  url: string
 
-  constructor({ url, name = null }: { url: string; name: string | null; }) {
-    this.url = url
+  constructor({ url, name = null, iconurl }: { url: string; name: string | null; iconurl?: string; }) {
+    this.fetchFrequency = 0
+    this.hidden = false
+    this.iconurl = iconurl
+    this.lastFetched = new Date()
     this.name = name
     this.openTarget = SourceOpenTarget.Local
-    this.lastFetched = new Date()
-    this.fetchFrequency = 0
     this.textDir = SourceTextDirection.LTR
-    this.hidden = false
+    this.url = url
   }
 
-  static async fetchMetaData(source: RSSSource) {
+  static async fetchMetaData(source: RssSource) {
     let feed = await parseRSS(source.url)
     if (!source.name) {
       if (feed.title) source.name = feed.title.trim()
@@ -298,39 +300,43 @@ export function insertSource(source: RssSource): AppThunk<Promise<RssSource>> {
   }
 }
 
-export function addSource(
-  url: string,
-  name: string = null,
-  batch = false
-): AppThunk<Promise<number>> {
+export function addSource({
+  batch = false,
+  iconurl,
+  name = null,
+  url,
+}: {
+  batch?: boolean;
+  iconurl?: string;
+  name?: string | null;
+  url: string;
+}): AppThunk<Promise<number>> {
   return async (dispatch, getState) => {
     const app = getState().app
-    if (app.sourceInit) {
-      dispatch(addSourceRequest(batch))
-    const source = new RSSSource({ url, name })
-      try {
-        const feed = await RSSSource.fetchMetaData(source)
-        const inserted = await dispatch(insertSource(source))
-        inserted.unreadCount = feed.items.length
-        dispatch(addSourceSuccess(inserted, batch))
-        window.settings.saveGroups(getState().groups)
-        dispatch(updateFavicon([inserted.sid]))
-        const items = await RSSSource.checkItems(inserted, feed.items)
-        await insertItems(items)
-        return inserted.sid
-      } catch (e) {
-        dispatch(addSourceFailure(e, batch))
-        if (!batch) {
-          window.utils.showErrorBox(
-            intl.get("sources.errorAdd"),
-            String(e),
-            intl.get("context.copy")
-          )
-        }
-        throw e
+    if (!app.sourceInit) throw new Error("Sources not initialized.")
+    dispatch(addSourceRequest(batch))
+    const source = new RssSource({ url, name, iconurl })
+    try {
+      const feed = await RssSource.fetchMetaData(source)
+      const inserted = await dispatch(insertSource(source))
+      inserted.unreadCount = feed.items.length
+      dispatch(addSourceSuccess(inserted, batch))
+      window.settings.saveGroups(getState().groups)
+      dispatch(updateFavicon([inserted.sid]))
+      const items = await RssSource.checkItems(inserted, feed.items)
+      await insertItems(items)
+      return inserted.sid
+    } catch (e) {
+      dispatch(addSourceFailure(e, batch))
+      if (!batch) {
+        window.utils.showErrorBox(
+          intl.get("sources.errorAdd"),
+          String(e),
+          intl.get("context.copy")
+        )
       }
+      throw e
     }
-    throw new Error("Sources not initialized.")
   }
 }
 

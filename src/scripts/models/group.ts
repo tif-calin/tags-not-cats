@@ -219,14 +219,12 @@ export function fixBrokenGroups(sources: SourceState): AppThunk {
 
 function outlineToSource(
   outline: Element
-): [ReturnType<typeof addSource>, string] {
-  let url = outline.getAttribute("xmlUrl")
-  let name = outline.getAttribute("text") || outline.getAttribute("title")
-  if (url) {
-    return [addSource(url.trim(), name, true), url]
-  } else {
-    return null
-  }
+): [ReturnType<typeof addSource>, string] | null {
+  const url = outline.getAttribute("xmlUrl")
+  const name = outline.getAttribute("title") || outline.getAttribute("text")
+  const iconurl = outline.getAttribute("tncr:iconurl")
+
+  return url ? [addSource({ url: url.trim(), name, batch: true, iconurl }), url] : null
 }
 
 export function importOPML(): AppThunk {
@@ -235,16 +233,17 @@ export function importOPML(): AppThunk {
       { name: intl.get("sources.opmlFile"), extensions: ["xml", "opml"] },
     ]
     window.utils.showOpenDialog(filters).then(data => {
-      if (data) {
+      if (!data) return
+
         dispatch(saveSettings())
-        let doc = domParser
+      const doc = domParser
           .parseFromString(data, "text/xml")
           .getElementsByTagName("body")
         if (doc.length == 0) {
           dispatch(saveSettings())
           return
         }
-        let parseError = doc[0].getElementsByTagName("parsererror")
+      const parseError = doc[0].getElementsByTagName("parsererror")
         if (parseError.length > 0) {
           dispatch(saveSettings())
           window.utils.showErrorBox(
@@ -253,19 +252,26 @@ export function importOPML(): AppThunk {
           )
           return
         }
-        let sources: [ReturnType<typeof addSource>, number, string][] = []
-        let errors: [string, any][] = []
+      const sources: [ReturnType<typeof addSource>, number, string][] = []
+      const errors: [string, any][] = []
         for (let el of doc[0].children) {
-          if (el.getAttribute("type") === "rss") {
-            let source = outlineToSource(el)
+        const type = el.getAttribute("type")
+
+        switch (type) {
+          case "rss":
+            const source = outlineToSource(el)
             if (source) sources.push([source[0], -1, source[1]])
-          } else if (el.hasAttribute("text") || el.hasAttribute("title")) {
-            let groupName = el.getAttribute("text") || el.getAttribute("title")
-            let gid = dispatch(createSourceGroup(groupName))
+            break
+          default:
+            const groupName = el.getAttribute("title") || el.getAttribute("text")
+            console.warn("Unknown <outline> type:", type, groupName)
+          case "bucket":
+            const gid = dispatch(createSourceGroup(groupName))
             for (let child of el.children) {
-              let source = outlineToSource(child)
+              const source = outlineToSource(child)
               if (source) sources.push([source[0], gid, source[1]])
             }
+            break
           }
         }
         dispatch(fetchItemsRequest(sources.length))
@@ -274,12 +280,8 @@ export function importOPML(): AppThunk {
             .then(sid => {
               if (sid !== null && gid > -1) dispatch(addSourceToGroup(gid, sid))
             })
-            .catch(err => {
-              errors.push([url, err])
-            })
-            .finally(() => {
-              dispatch(fetchItemsIntermediate())
-            })
+          .catch(err => errors.push([url, err]))
+          .finally(() => dispatch(fetchItemsIntermediate()))
         })
         Promise.allSettled(promises).then(() => {
           dispatch(fetchItemsSuccess([], {}))
@@ -298,7 +300,6 @@ export function importOPML(): AppThunk {
             )
           }
         })
-      }
     })
   }
 }
