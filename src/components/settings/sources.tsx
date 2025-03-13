@@ -59,7 +59,7 @@ const enum EditDropdownKeys {
 class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
   selection: Selection
 
-  constructor(props) {
+  constructor(props: SourcesTabProps) {
     super(props)
     this.state = {
       newUrl: "",
@@ -97,29 +97,32 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
   columns = (): IColumn[] => [
     {
       key: "favicon",
-      name: intl.get("icon"),
+      ariaLabel: intl.get("icon"),
       fieldName: "name",
-      isIconOnly: true,
       iconName: "ImagePixel",
-      minWidth: 16,
+      isIconOnly: true,
       maxWidth: 16,
+      minWidth: 16,
+      name: intl.get("icon"),
       onRender: (s: RSSSource) =>
         s.iconurl && <img src={s.iconurl} className="favicon" />,
     },
     {
       key: "name",
-      name: intl.get("name"),
-      fieldName: "name",
-      minWidth: 200,
+      ariaLabel: intl.get("name"),
       data: "string",
+      fieldName: "name",
       isRowHeader: true,
+      minWidth: 180,
+      name: intl.get("name"),
     },
     {
       key: "url",
-      name: "URL",
+      ariaLabel: "URL",
+      data: "string",
       fieldName: "url",
       minWidth: 280,
-      data: "string",
+      name: "URL",
     },
   ]
 
