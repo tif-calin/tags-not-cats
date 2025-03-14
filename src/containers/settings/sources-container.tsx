@@ -12,7 +12,8 @@ import {
   deleteSources,
   toggleSourceHidden,
 } from "../../scripts/models/source";
-import { importOPML, exportOPML } from "../../scripts/models/group";
+import { exportOPML } from "../../scripts/opml";
+import { importOPML } from "../../scripts/opml";
 import { AppDispatch, validateFavicon } from "../../scripts/utils";
 import { saveSettings, toggleSettings } from "../../scripts/models/app";
 import { SyncService } from "../../schema-types";
