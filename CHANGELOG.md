@@ -23,6 +23,9 @@
   - Converted some function parameters to named parameters
   - Renamed some variables
 - Updated some dependencies, removed some others
+  - Bumped major versions react 16->17, electron 27->35, typescript 4->5, prettier 2->3, and more
+  - Updated all up to their latest current major version
+  - Removed nedb
 
 ## v1.1.4
 This was the last version number of the original Fluent Reader before the hard fork.

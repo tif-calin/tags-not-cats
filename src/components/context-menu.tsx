@@ -1,6 +1,5 @@
 import * as React from "react";
 import intl from "react-intl-universal";
-import QRCode from "qrcode.react";
 import { cutText, webSearch, getSearchEngineName, platformCtrl } from "../scripts/utils";
 import {
   ContextualMenu,
@@ -20,6 +19,7 @@ import {
 import { ViewType, ImageCallbackTypes, ViewConfigs } from "../schema-types";
 import { FilterType } from "../scripts/models/feed";
 import { useAppDispatch, useAppSelector } from "../scripts/reducer";
+import { QRCodeSVG } from "qrcode.react";
 import {
   setViewConfigs,
   showItem,
@@ -34,7 +34,7 @@ export const shareSubmenu = (item: RSSItem): IContextualMenuItem[] => [
 
 export const renderShareQR = (item: IContextualMenuItem) => (
   <div className="qr-container">
-    <QRCode value={item.url} size={150} renderAs="svg" />
+    <QRCodeSVG value={item.url} size={150} />
   </div>
 );
 

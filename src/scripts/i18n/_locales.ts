@@ -18,24 +18,24 @@ import ko from "./ko.json";
 import pt_PT from "./pt-PT.json";
 
 const locales = {
-  "en-US": en_US,
   "cs": cs,
-  "zh-CN": zh_CN,
-  "zh-TW": zh_TW,
-  "ja": ja,
-  "fr-FR": fr_FR,
   "de": de,
-  "nl": nl,
+  "en-US": en_US,
   "es": es,
+  "fi-FI": fi_FI,
+  "fr-FR": fr_FR,
+  "it": it,
+  "ja": ja,
+  "ko": ko,
+  "nl": nl,
+  "pt-BR": pt_BR,
+  "pt-PT": pt_PT,
+  "ru": ru,
   "sv": sv,
   "tr": tr,
-  "it": it,
   "uk": uk,
-  "ru": ru,
-  "pt-BR": pt_BR,
-  "fi-FI": fi_FI,
-  "ko": ko,
-  "pt-PT": pt_PT,
+  "zh-CN": zh_CN,
+  "zh-TW": zh_TW,
 };
 
 export default locales;
