@@ -210,7 +210,7 @@
     "failure": "Cannot connect to service",
     "failureHint": "Please check the service configuration or network status.",
     "fetchUnlimited": "Unlimited (not recommended)",
-    "exportToLite": "Export to Fluent Reader Lite"
+    "exportToLite": "Export to TNCR Reader Lite"
   },
   "app": {
     "cleanup": "Clean up",
@@ -226,7 +226,7 @@
     "data": "Application Data",
     "backup": "Backup",
     "restore": "Restore",
-    "frData": "Fluent Reader Data",
+    "frData": "TNCR Reader Data",
     "language": "Display language",
     "theme": "Theme",
     "lightTheme": "Light mode",

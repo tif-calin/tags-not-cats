@@ -43,13 +43,13 @@ export class WindowManager {
   createWindow = () => {
     if (!this.hasWindow()) {
       this.mainWindow = new BrowserWindow({
-        title: "Fluent Reader",
+        title: "TNCR Reader",
         backgroundColor:
           process.platform === "darwin"
             ? "#00000000"
             : nativeTheme.shouldUseDarkColors
-            ? "#282828"
-            : "#faf9f8",
+              ? "#282828"
+              : "#faf9f8",
         vibrancy: "sidebar",
         x: this.mainWindowState.x,
         y: this.mainWindowState.y,
@@ -99,7 +99,7 @@ export class WindowManager {
           this.mainWindow.webContents.send(
             "window-context-menu",
             [params.x, params.y],
-            params.selectionText
+            params.selectionText,
           );
         }
       });

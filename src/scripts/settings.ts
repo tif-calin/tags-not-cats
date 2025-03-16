@@ -87,7 +87,7 @@ export function getCurrentLocale() {
 
 export async function exportAll() {
   const filters = [{ name: intl.get("app.frData"), extensions: ["frdata"] }];
-  const write = await window.utils.showSaveDialog(filters, "*/Fluent_Reader_Backup.frdata");
+  const write = await window.utils.showSaveDialog(filters, "*/TNCR_Reader_Backup.frdata");
   if (write) {
     let output = window.settings.getAll();
     output["lovefield"] = {
@@ -108,7 +108,7 @@ export async function importAll() {
     intl.get("confirm"),
     intl.get("cancel"),
     true,
-    "warning"
+    "warning",
   );
   if (!confirmed) return true;
   let configs = JSON.parse(data);

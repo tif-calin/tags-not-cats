@@ -33,6 +33,7 @@
     "@types/react-redux": "^7.1.9",
     "electron": "^35.0.1",
     "electron-builder": "^25.1.8",
+    "electron-devtools-installer": "^4.0.0",
     "electron-react-devtools": "^0.5.3",
     "electron-store": "^8.2.0",
     "electron-window-state": "^5.0.3",

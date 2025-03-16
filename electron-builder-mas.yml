@@ -1,6 +1,6 @@
-appId: DevHYLiu.FluentReader
+appId: DevHYLiu.TNCRReader
 buildVersion: 29
-productName: Fluent Reader
+productName: TNCR Reader
 copyright: Copyright © 2020 Haoyuan Liu
 files:
   - "./dist/**/*"

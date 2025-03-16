@@ -203,7 +203,7 @@
     "failure": "Fehler beim Verbinden zum Server",
     "failureHint": "Bitte überprüfe die Server-Konfiguration oder deinen Netzwerk-Status.",
     "fetchUnlimited": "Unbegrenzt (nicht empfohlen)",
-    "exportToLite": "Für Fluent Reader Lite exportieren"
+    "exportToLite": "Für TNCR Reader Lite exportieren"
   },
   "app": {
     "cleanup": "Aufräumen",
@@ -219,7 +219,7 @@
     "data": "App-Daten",
     "backup": "Sichern",
     "restore": "Wiederherstellen",
-    "frData": "Fluent Reader - Daten",
+    "frData": "TNCR Reader - Daten",
     "language": "Anzeigesprache",
     "theme": "Darstellung",
     "lightTheme": "Hell",

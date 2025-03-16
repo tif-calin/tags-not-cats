@@ -3,6 +3,11 @@ import { ThemeSettings, SchemaTypes } from "./schema-types";
 import { store } from "./main/settings";
 import performUpdate from "./main/update-scripts";
 import { WindowManager } from "./main/window";
+import {
+  installExtension,
+  REACT_DEVELOPER_TOOLS,
+  REDUX_DEVTOOLS,
+} from "electron-devtools-installer";
 
 if (!process.mas) {
   const locked = app.requestSingleInstanceLock();
@@ -11,8 +16,16 @@ if (!process.mas) {
   }
 }
 
+app.whenReady().then(() => {
+  [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS].forEach(extension => {
+    installExtension(extension)
+      .then(ext => console.log(`Added Extension:  ${ext.name}`))
+      .catch(err => console.log("An error occurred: ", err));
+  });
+});
+
 if (!app.isPackaged) app.setAppUserModelId(process.execPath);
-else if (process.platform === "win32") app.setAppUserModelId("me.hyliu.fluentreader");
+else if (process.platform === "win32") app.setAppUserModelId("me.culi.tncrreader");
 
 let restarting = false;
 
@@ -122,15 +135,9 @@ ipcMain.handle("import-all-settings", (_, configs: SchemaTypes) => {
   restarting = true;
   store.clear();
   for (let [key, value] of Object.entries(configs)) {
-    // @ts-ignore
     store.set(key, value);
   }
   performUpdate(store);
   nativeTheme.themeSource = store.get("theme", ThemeSettings.Default);
-  setTimeout(
-    () => {
-      winManager.mainWindow.close();
-    },
-    process.platform === "darwin" ? 1000 : 0
-  ); // Why ???
+  setTimeout(() => winManager.mainWindow.close(), process.platform === "darwin" ? 1_000 : 0); // Why ???
 });

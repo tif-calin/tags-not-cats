@@ -1,6 +1,6 @@
 ## Internationalization
 
-Currently, Fluent Reader supports the following languages.
+Currently, we support the following languages.
 
 | Locale | Language | Credit |
 | --- | --- | --- |
@@ -23,4 +23,4 @@ Currently, Fluent Reader supports the following languages.
 | ko | 한글 | [@1drive](https://github.com/1drive) |
 | ru | Russian | [@nxblnd](https://github.com/nxblnd) |
 
-Refer to the repo of [react-intl-universal](https://github.com/alibaba/react-intl-universal) to get started on internationalization. 
+Refer to the repo of [react-intl-universal](https://github.com/alibaba/react-intl-universal) to get started on internationalization.

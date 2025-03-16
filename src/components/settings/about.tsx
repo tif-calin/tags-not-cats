@@ -7,7 +7,7 @@ class AboutTab extends React.Component {
     <div className="tab-body">
       <Stack className="settings-about" horizontalAlign="center">
         <img src="icons/logo.svg" style={{ width: 120, height: 120 }} />
-        <h3 style={{ fontWeight: 600 }}>Fluent Reader</h3>
+        <h3 style={{ fontWeight: 600 }}>TNCR Reader</h3>
         <small>
           {intl.get("settings.version")} {window.utils.getVersion()}
         </small>
@@ -17,7 +17,7 @@ class AboutTab extends React.Component {
             <Link
               onClick={() =>
                 window.utils.openExternal(
-                  "https://github.com/yang991178/fluent-reader/wiki/Support#keyboard-shortcuts"
+                  "https://github.com/yang991178/fluent-reader/wiki/Support#keyboard-shortcuts",
                 )
               }
             >

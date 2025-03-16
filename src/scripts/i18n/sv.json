@@ -203,7 +203,7 @@
     "failure": "Kan inte ansluta till tjänsten",
     "failureHint": "Kontrollera tjänstkonfigurationen eller nätverksstatus.",
     "fetchUnlimited": "Obegränsat (rekommenderas ej)",
-    "exportToLite": "Exportera till Fluent Reader Lite"
+    "exportToLite": "Exportera till TNCR Reader Lite"
   },
   "app": {
     "cleanup": "Rensa",
@@ -219,7 +219,7 @@
     "data": "Applikationsdata",
     "backup": "Säkerhetskopier",
     "restore": "Återställ",
-    "frData": "Fluent Reader Data",
+    "frData": "TNCR Reader Data",
     "language": "Skärmspråk",
     "theme": "Tema",
     "lightTheme": "Ljust läge",

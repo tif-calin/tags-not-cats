@@ -203,7 +203,7 @@
     "failure": "Er kan geen verbinding worden gemaakt met de dienst",
     "failureHint": "Controleer de dienstinstellingen of netwerkstatus.",
     "fetchUnlimited": "Onbeperkt (niet aanbevolen)",
-    "exportToLite": "Exporteren naar Fluent Reader Lite"
+    "exportToLite": "Exporteren naar TNCR Reader Lite"
   },
   "app": {
     "cleanup": "Opruimen",
@@ -219,7 +219,7 @@
     "data": "Programmagegevens",
     "backup": "Back-uppen",
     "restore": "Herstellen",
-    "frData": "Fluent Reader-gegevens",
+    "frData": "TNCR Reader-gegevens",
     "language": "Weergavetaal",
     "theme": "Thema",
     "lightTheme": "Licht",

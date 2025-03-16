@@ -210,7 +210,7 @@
     "failure": "Nedaří se připojit ke službě",
     "failureHint": "Zkontrolujte konfiguraci služby nebo stav sítě.",
     "fetchUnlimited": "Neomezený (nedoporučuje se)",
-    "exportToLite": "Exportovat do Fluent reader Lite"
+    "exportToLite": "Exportovat do TNCR reader Lite"
   },
   "app": {
     "cleanup": "Vyčistit",
@@ -226,7 +226,7 @@
     "data": "Data aplikace",
     "backup": "Záloha",
     "restore": "Obnovit",
-    "frData": "Data aplikace Fluent Reader",
+    "frData": "Data aplikace TNCR Reader",
     "language": "Zobrazovaný jazyk",
     "theme": "Motiv",
     "lightTheme": "Světlý motiv",

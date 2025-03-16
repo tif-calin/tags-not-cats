@@ -203,7 +203,7 @@
     "failure": "Impossibile connettersi al servizio",
     "failureHint": "Controlla le impostazioni del servizio o se ci sono problemi di connessione",
     "fetchUnlimited": "Illimitato (non Raccomandaot)",
-    "exportToLite": "Esporta a Fluent Reader Lite"
+    "exportToLite": "Esporta a TNCR Reader Lite"
   },
   "app": {
     "cleanup": "Pulisci",
@@ -219,7 +219,7 @@
     "data": "Memoria Applicazione",
     "backup": "Backup",
     "restore": "Ripristina",
-    "frData": "Fluent Reader Data",
+    "frData": "TNCR Reader Data",
     "language": "Lingua Display",
     "theme": "Tema",
     "lightTheme": "Tema chiaro",

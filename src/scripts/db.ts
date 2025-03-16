@@ -4,7 +4,7 @@ const sdbSchema = lf.schema.create("sourcesDB", 3);
 sdbSchema
   .createTable("sources")
   .addColumn("sid", lf.Type.INTEGER)
-  .addPrimaryKey(["sid"], false)
+  .addPrimaryKey(["sid"], false) // system identifier
   .addColumn("fetchFrequency", lf.Type.NUMBER)
   .addColumn("hidden", lf.Type.BOOLEAN)
   .addColumn("iconurl", lf.Type.STRING)
