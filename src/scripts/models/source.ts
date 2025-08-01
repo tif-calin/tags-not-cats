@@ -80,8 +80,8 @@ export class RssSource {
         lf.op.and(
           db.items.source.eq(i.source),
           db.items.title.eq(i.title),
-          db.items.date.eq(i.date)
-        )
+          db.items.date.eq(i.date),
+        ),
       )
       .limit(1)
       .exec()) as RSSItem[];
@@ -172,14 +172,14 @@ export type SourceActionTypes =
   | DeleteSourceAction
   | ToggleSourceHiddenAction;
 
-export function initSourcesRequest(): SourceActionTypes {
+function initSourcesRequest(): SourceActionTypes {
   return {
     type: INIT_SOURCES,
     status: ActionStatus.Request,
   };
 }
 
-export function initSourcesSuccess(sources: SourceState): SourceActionTypes {
+function initSourcesSuccess(sources: SourceState): SourceActionTypes {
   return {
     type: INIT_SOURCES,
     status: ActionStatus.Success,
@@ -187,7 +187,7 @@ export function initSourcesSuccess(sources: SourceState): SourceActionTypes {
   };
 }
 
-export function initSourcesFailure(err): SourceActionTypes {
+function initSourcesFailure(err): SourceActionTypes {
   return {
     type: INIT_SOURCES,
     status: ActionStatus.Failure,
@@ -322,7 +322,7 @@ export function addSource({
         window.utils.showErrorBox(
           intl.get("sources.errorAdd"),
           String(e),
-          intl.get("context.copy")
+          intl.get("context.copy"),
         );
       }
       throw e;
@@ -418,7 +418,7 @@ export function updateFavicon(sids?: number[], force = false): AppThunk<Promise<
 
 export function sourceReducer(
   state: SourceState = {},
-  action: SourceActionTypes | ItemActionTypes
+  action: SourceActionTypes | ItemActionTypes,
 ): SourceState {
   switch (action.type) {
     case INIT_SOURCES:
@@ -457,7 +457,7 @@ export function sourceReducer(
             if (!item.hasRead) {
               updateMap.set(
                 item.source,
-                updateMap.has(item.source) ? updateMap.get(item.source) + 1 : 1
+                updateMap.has(item.source) ? updateMap.get(item.source) + 1 : 1,
               );
             }
           }

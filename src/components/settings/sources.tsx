@@ -40,10 +40,17 @@ type SourcesTabProps = {
 };
 
 type SourcesTabState = {
-  [formName: string]: string;
-} & {
+  columns: IColumn[];
   selectedSource: RssSource;
   selectedSources: RssSource[];
+  sortBy?: string; // 'name' | 'url'
+  sortDescending?: boolean;
+
+  announcedMessage?: string;
+  newUrl?: string;
+  newSourceName?: string;
+  newSourceIcon?: string;
+  sourceEditOption?: string;
 };
 
 const enum EditDropdownKeys {
@@ -57,12 +64,54 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
 
   constructor(props: SourcesTabProps) {
     super(props);
+
+    const columns: IColumn[] = [
+      {
+        key: "favicon",
+        ariaLabel: intl.get("icon"),
+        fieldName: "name",
+        iconName: "ImagePixel",
+        isIconOnly: true,
+        maxWidth: 16,
+        minWidth: 16,
+        name: intl.get("icon"),
+        onRender: (s: RssSource) => s.iconurl && <img src={s.iconurl} className="favicon" />,
+      },
+      {
+        key: "name",
+        ariaLabel: intl.get("name"),
+        data: "string",
+        fieldName: "name",
+        isRowHeader: true,
+        isResizable: true,
+        isSorted: false,
+        isSortedDescending: true,
+        minWidth: 180,
+        name: intl.get("name"),
+        onColumnClick: this._onColumnClick,
+      },
+      {
+        key: "url",
+        ariaLabel: "URL",
+        data: "string",
+        fieldName: "url",
+        isResizable: true,
+        isSorted: false,
+        isSortedDescending: true,
+        minWidth: 280,
+        name: "URL",
+        onColumnClick: this._onColumnClick,
+      },
+    ];
+
     this.state = {
+      columns,
       newUrl: "",
       newSourceName: "",
       selectedSource: null,
       selectedSources: null,
     };
+
     this.selection = new Selection({
       getKey: s => (s as RssSource).sid,
       onSelectionChanged: () => {
@@ -87,37 +136,6 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
       this.props.acknowledgeSIDs();
     }
   };
-
-  columns = (): IColumn[] => [
-    {
-      key: "favicon",
-      ariaLabel: intl.get("icon"),
-      fieldName: "name",
-      iconName: "ImagePixel",
-      isIconOnly: true,
-      maxWidth: 16,
-      minWidth: 16,
-      name: intl.get("icon"),
-      onRender: (s: RssSource) => s.iconurl && <img src={s.iconurl} className="favicon" />,
-    },
-    {
-      key: "name",
-      ariaLabel: intl.get("name"),
-      data: "string",
-      fieldName: "name",
-      isRowHeader: true,
-      minWidth: 180,
-      name: intl.get("name"),
-    },
-    {
-      key: "url",
-      ariaLabel: "URL",
-      data: "string",
-      fieldName: "url",
-      minWidth: 280,
-      name: "URL",
-    },
-  ];
 
   sourceEditOptions = (): IDropdownOption[] => [
     { key: EditDropdownKeys.Name, text: intl.get("name") },
@@ -192,6 +210,7 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
 
   handleInputChange = event => {
     const name: string = event.target.name;
+    // @ts-ignore
     this.setState({ [name]: event.target.value });
   };
 
@@ -222,202 +241,240 @@ class SourcesTab extends React.Component<SourcesTabProps, SourcesTabState> {
     });
   };
 
-  render = () => (
-    <div className="tab-body">
-      {this.props.serviceOn && (
-        <MessageBar messageBarType={MessageBarType.info}>
-          {intl.get("sources.serviceWarning")}
-        </MessageBar>
-      )}
-      <Label>{intl.get("sources.opmlFile")}</Label>
-      <Stack horizontal>
-        <Stack.Item>
-          <PrimaryButton onClick={this.props.importOPML} text={intl.get("sources.import")} />
-        </Stack.Item>
-        <Stack.Item>
-          <DefaultButton onClick={this.props.exportOPML} text={intl.get("sources.export")} />
-        </Stack.Item>
-      </Stack>
+  render = () => {
+    const items = Object.values(this.props.sources);
+    if (this.state.sortBy) {
+      items.sort((a, b) => {
+        const key = this.state.sortBy as keyof RssSource;
+        return this.state.sortDescending ? (a[key] < b[key] ? 1 : -1) : a[key] > b[key] ? 1 : -1;
+      });
+    }
 
-      <form onSubmit={this.addSource}>
-        <Label htmlFor="newUrl">{intl.get("sources.add")}</Label>
+    return (
+      <div className="tab-body">
+        {this.props.serviceOn && (
+          <MessageBar messageBarType={MessageBarType.info}>
+            {intl.get("sources.serviceWarning")}
+          </MessageBar>
+        )}
+        <Label>{intl.get("sources.opmlFile")}</Label>
         <Stack horizontal>
-          <Stack.Item grow>
-            <TextField
-              onGetErrorMessage={v => (urlTest(v.trim()) ? "" : intl.get("sources.badUrl"))}
-              validateOnLoad={false}
-              placeholder={intl.get("sources.inputUrl")}
-              value={this.state.newUrl}
-              id="newUrl"
-              name="newUrl"
-              onChange={this.handleInputChange}
-            />
+          <Stack.Item>
+            <PrimaryButton onClick={this.props.importOPML} text={intl.get("sources.import")} />
           </Stack.Item>
           <Stack.Item>
-            <PrimaryButton
-              disabled={!urlTest(this.state.newUrl.trim())}
-              type="submit"
-              text={intl.get("add")}
-            />
+            <DefaultButton onClick={this.props.exportOPML} text={intl.get("sources.export")} />
           </Stack.Item>
         </Stack>
-      </form>
 
-      <DetailsList
-        compact={Object.keys(this.props.sources).length >= 10}
-        items={Object.values(this.props.sources)}
-        columns={this.columns()}
-        getKey={s => s.sid}
-        setKey="selected"
-        selection={this.selection}
-        selectionMode={SelectionMode.multiple}
-      />
-
-      {this.state.selectedSource && (
-        <>
-          {this.state.selectedSource.serviceRef && (
-            <MessageBar messageBarType={MessageBarType.info}>
-              {intl.get("sources.serviceManaged")}
-            </MessageBar>
-          )}
-          <Label>{intl.get("sources.selected")}</Label>
+        <form onSubmit={this.addSource}>
+          <Label htmlFor="newUrl">{intl.get("sources.add")}</Label>
           <Stack horizontal>
-            <Stack.Item>
-              <Dropdown
-                options={this.sourceEditOptions()}
-                selectedKey={this.state.sourceEditOption}
-                onChange={this.onSourceEditOptionChange}
-                style={{ width: 120 }}
+            <Stack.Item grow>
+              <TextField
+                onGetErrorMessage={v => (urlTest(v.trim()) ? "" : intl.get("sources.badUrl"))}
+                validateOnLoad={false}
+                placeholder={intl.get("sources.inputUrl")}
+                value={this.state.newUrl}
+                id="newUrl"
+                name="newUrl"
+                onChange={this.handleInputChange}
               />
             </Stack.Item>
-            {this.state.sourceEditOption === EditDropdownKeys.Name && (
-              <>
-                <Stack.Item grow>
-                  <TextField
-                    onGetErrorMessage={v => (v.trim().length == 0 ? intl.get("emptyName") : "")}
-                    validateOnLoad={false}
-                    placeholder={intl.get("sources.name")}
-                    value={this.state.newSourceName}
-                    name="newSourceName"
-                    onChange={this.handleInputChange}
-                  />
-                </Stack.Item>
-                <Stack.Item>
-                  <DefaultButton
-                    disabled={this.state.newSourceName.trim().length == 0}
-                    onClick={this.updateSourceName}
-                    text={intl.get("sources.editName")}
-                  />
-                </Stack.Item>
-              </>
-            )}
-            {this.state.sourceEditOption === EditDropdownKeys.Icon && (
-              <>
-                <Stack.Item grow>
-                  <TextField
-                    onGetErrorMessage={v => (urlTest(v.trim()) ? "" : intl.get("sources.badUrl"))}
-                    validateOnLoad={false}
-                    placeholder={intl.get("sources.inputUrl")}
-                    value={this.state.newSourceIcon}
-                    name="newSourceIcon"
-                    onChange={this.handleInputChange}
-                  />
-                </Stack.Item>
-                <Stack.Item>
-                  <DefaultButton
-                    disabled={!urlTest(this.state.newSourceIcon.trim())}
-                    onClick={this.updateSourceIcon}
-                    text={intl.get("edit")}
-                  />
-                </Stack.Item>
-              </>
-            )}
-            {this.state.sourceEditOption === EditDropdownKeys.Url && (
-              <>
-                <Stack.Item grow>
-                  <TextField disabled value={this.state.selectedSource.url} />
-                </Stack.Item>
-                <Stack.Item>
-                  <DefaultButton
-                    onClick={() => window.utils.writeClipboard(this.state.selectedSource.url)}
-                    text={intl.get("context.copy")}
-                  />
-                </Stack.Item>
-              </>
-            )}
+            <Stack.Item>
+              <PrimaryButton
+                disabled={!urlTest(this.state.newUrl.trim())}
+                type="submit"
+                text={intl.get("add")}
+              />
+            </Stack.Item>
           </Stack>
-          {!this.state.selectedSource.serviceRef && (
-            <>
-              <Label>{intl.get("sources.fetchFrequency")}</Label>
-              <Stack>
+        </form>
+
+        <DetailsList
+          compact={Object.keys(this.props.sources).length >= 10}
+          items={items}
+          columns={this.state.columns}
+          getKey={s => s.sid}
+          setKey="selected"
+          selection={this.selection}
+          selectionMode={SelectionMode.multiple}
+        />
+
+        {this.state.selectedSource && (
+          <>
+            {this.state.selectedSource.serviceRef && (
+              <MessageBar messageBarType={MessageBarType.info}>
+                {intl.get("sources.serviceManaged")}
+              </MessageBar>
+            )}
+            <Label>{intl.get("sources.selected")}</Label>
+            <Stack horizontal>
+              <Stack.Item>
+                <Dropdown
+                  options={this.sourceEditOptions()}
+                  selectedKey={this.state.sourceEditOption}
+                  onChange={this.onSourceEditOptionChange}
+                  style={{ width: 120 }}
+                />
+              </Stack.Item>
+              {this.state.sourceEditOption === EditDropdownKeys.Name && (
+                <>
+                  <Stack.Item grow>
+                    <TextField
+                      onGetErrorMessage={v => (v.trim().length == 0 ? intl.get("emptyName") : "")}
+                      validateOnLoad={false}
+                      placeholder={intl.get("sources.name")}
+                      value={this.state.newSourceName}
+                      name="newSourceName"
+                      onChange={this.handleInputChange}
+                    />
+                  </Stack.Item>
+                  <Stack.Item>
+                    <DefaultButton
+                      disabled={this.state.newSourceName.trim().length == 0}
+                      onClick={this.updateSourceName}
+                      text={intl.get("sources.editName")}
+                    />
+                  </Stack.Item>
+                </>
+              )}
+              {this.state.sourceEditOption === EditDropdownKeys.Icon && (
+                <>
+                  <Stack.Item grow>
+                    <TextField
+                      onGetErrorMessage={v => (urlTest(v.trim()) ? "" : intl.get("sources.badUrl"))}
+                      validateOnLoad={false}
+                      placeholder={intl.get("sources.inputUrl")}
+                      value={this.state.newSourceIcon}
+                      name="newSourceIcon"
+                      onChange={this.handleInputChange}
+                    />
+                  </Stack.Item>
+                  <Stack.Item>
+                    <DefaultButton
+                      disabled={!urlTest(this.state.newSourceIcon.trim())}
+                      onClick={this.updateSourceIcon}
+                      text={intl.get("edit")}
+                    />
+                  </Stack.Item>
+                </>
+              )}
+              {this.state.sourceEditOption === EditDropdownKeys.Url && (
+                <>
+                  <Stack.Item grow>
+                    <TextField disabled value={this.state.selectedSource.url} />
+                  </Stack.Item>
+                  <Stack.Item>
+                    <DefaultButton
+                      onClick={() => window.utils.writeClipboard(this.state.selectedSource.url)}
+                      text={intl.get("context.copy")}
+                    />
+                  </Stack.Item>
+                </>
+              )}
+            </Stack>
+            {!this.state.selectedSource.serviceRef && (
+              <>
+                <Label>{intl.get("sources.fetchFrequency")}</Label>
+                <Stack>
+                  <Stack.Item>
+                    <Dropdown
+                      options={this.fetchFrequencyOptions()}
+                      selectedKey={
+                        this.state.selectedSource.fetchFrequency
+                          ? String(this.state.selectedSource.fetchFrequency)
+                          : "0"
+                      }
+                      onChange={this.onFetchFrequencyChange}
+                      style={{ width: 200 }}
+                    />
+                  </Stack.Item>
+                </Stack>
+              </>
+            )}
+            <ChoiceGroup
+              label={intl.get("sources.openTarget")}
+              options={this.sourceOpenTargetChoices()}
+              selectedKey={String(this.state.selectedSource.openTarget)}
+              onChange={this.onOpenTargetChange}
+            />
+            <Stack horizontal verticalAlign="baseline">
+              <Stack.Item grow>
+                <Label>{intl.get("sources.hidden")}</Label>
+              </Stack.Item>
+              <Stack.Item>
+                <Toggle checked={this.state.selectedSource.hidden} onChange={this.onToggleHidden} />
+              </Stack.Item>
+            </Stack>
+            {!this.state.selectedSource.serviceRef && (
+              <Stack horizontal>
                 <Stack.Item>
-                  <Dropdown
-                    options={this.fetchFrequencyOptions()}
-                    selectedKey={
-                      this.state.selectedSource.fetchFrequency
-                        ? String(this.state.selectedSource.fetchFrequency)
-                        : "0"
-                    }
-                    onChange={this.onFetchFrequencyChange}
-                    style={{ width: 200 }}
+                  <DangerButton
+                    onClick={() => this.props.deleteSource(this.state.selectedSource)}
+                    key={this.state.selectedSource.sid}
+                    text={intl.get("sources.delete")}
                   />
+                </Stack.Item>
+                <Stack.Item>
+                  <span className="settings-hint">{intl.get("sources.deleteWarning")}</span>
+                </Stack.Item>
+              </Stack>
+            )}
+          </>
+        )}
+        {this.state.selectedSources &&
+          (this.state.selectedSources.filter(s => s.serviceRef).length === 0 ? (
+            <>
+              <Label>{intl.get("sources.selectedMulti")}</Label>
+              <Stack horizontal>
+                <Stack.Item>
+                  <DangerButton
+                    onClick={() => this.props.deleteSources(this.state.selectedSources)}
+                    text={intl.get("sources.delete")}
+                  />
+                </Stack.Item>
+                <Stack.Item>
+                  <span className="settings-hint">{intl.get("sources.deleteWarning")}</span>
                 </Stack.Item>
               </Stack>
             </>
-          )}
-          <ChoiceGroup
-            label={intl.get("sources.openTarget")}
-            options={this.sourceOpenTargetChoices()}
-            selectedKey={String(this.state.selectedSource.openTarget)}
-            onChange={this.onOpenTargetChange}
-          />
-          <Stack horizontal verticalAlign="baseline">
-            <Stack.Item grow>
-              <Label>{intl.get("sources.hidden")}</Label>
-            </Stack.Item>
-            <Stack.Item>
-              <Toggle checked={this.state.selectedSource.hidden} onChange={this.onToggleHidden} />
-            </Stack.Item>
-          </Stack>
-          {!this.state.selectedSource.serviceRef && (
-            <Stack horizontal>
-              <Stack.Item>
-                <DangerButton
-                  onClick={() => this.props.deleteSource(this.state.selectedSource)}
-                  key={this.state.selectedSource.sid}
-                  text={intl.get("sources.delete")}
-                />
-              </Stack.Item>
-              <Stack.Item>
-                <span className="settings-hint">{intl.get("sources.deleteWarning")}</span>
-              </Stack.Item>
-            </Stack>
-          )}
-        </>
-      )}
-      {this.state.selectedSources &&
-        (this.state.selectedSources.filter(s => s.serviceRef).length === 0 ? (
-          <>
-            <Label>{intl.get("sources.selectedMulti")}</Label>
-            <Stack horizontal>
-              <Stack.Item>
-                <DangerButton
-                  onClick={() => this.props.deleteSources(this.state.selectedSources)}
-                  text={intl.get("sources.delete")}
-                />
-              </Stack.Item>
-              <Stack.Item>
-                <span className="settings-hint">{intl.get("sources.deleteWarning")}</span>
-              </Stack.Item>
-            </Stack>
-          </>
-        ) : (
-          <MessageBar messageBarType={MessageBarType.info}>
-            {intl.get("sources.serviceManaged")}
-          </MessageBar>
-        ))}
-    </div>
-  );
+          ) : (
+            <MessageBar messageBarType={MessageBarType.info}>
+              {intl.get("sources.serviceManaged")}
+            </MessageBar>
+          ))}
+      </div>
+    );
+  };
+
+  private _onColumnClick = (_ev: React.MouseEvent<HTMLElement>, selectedColumn: IColumn): void => {
+    const newColumns = this.state.columns.slice();
+
+    newColumns.forEach(column => {
+      if (column.key === selectedColumn.key) {
+        if (column.isSorted && column.isSortedDescending) {
+          column.isSorted = false;
+          this.setState({ sortBy: undefined });
+        } else {
+          column.isSortedDescending = !column.isSortedDescending;
+          column.isSorted = true;
+          this.setState({
+            announcedMessage: `${column.name} is sorted ${
+              column.isSortedDescending ? "descending" : "ascending"
+            }`,
+            sortBy: column.fieldName,
+            sortDescending: column.isSortedDescending,
+          });
+        }
+      } else {
+        column.isSorted = false;
+        column.isSortedDescending = true;
+      }
+    });
+
+    this.setState({ columns: newColumns });
+  };
 }
 
 export default SourcesTab;
