@@ -1,9 +1,14 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
+const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+const { HotModuleReplacementPlugin } = require("webpack");
+const ReactRefreshTypeScript = require("react-refresh-typescript").default;
+
+const isDevelopment = true; // TODO(culi): Set this based on your environment
 
 module.exports = [
   {
-    mode: "production",
+    mode: isDevelopment ? "development" : "production",
     entry: "./src/electron.ts",
     target: "electron-main",
     module: {
@@ -11,10 +16,19 @@ module.exports = [
         {
           test: /\.ts$/,
           include: /src/,
-          resolve: {
-            extensions: [".ts", ".js"],
-          },
-          use: [{ loader: "ts-loader" }],
+          resolve: { extensions: [".ts", ".js"] },
+          exclude: /node_modules/,
+          use: [
+            {
+              loader: "ts-loader",
+              options: {
+                getCustomTransformers: () => ({
+                  before: [isDevelopment && ReactRefreshTypeScript()].filter(Boolean),
+                }),
+                transpileOnly: isDevelopment,
+              },
+            },
+          ],
         },
       ],
     },
@@ -23,6 +37,7 @@ module.exports = [
       path: __dirname + "/dist",
       filename: "electron.js",
     },
+    plugins: [isDevelopment && new ReactRefreshWebpackPlugin()].filter(Boolean),
     node: {
       __dirname: false,
     },
