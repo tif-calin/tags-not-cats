@@ -16,3 +16,6 @@ temp/*
 # Node
 node_modules
 *.lock
+
+# Environment files
+.env

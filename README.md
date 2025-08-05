@@ -37,6 +37,9 @@ If you enjoy using this app, consider supporting its development by donating thr
 
 ### Build from source
 ```bash
+# Add .env files
+cp .env.example .env
+
 # Install dependencies
 npm install
 
